@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Format Converter</title>
+    <link rel="stylesheet" href="https://pyscript.net/latest/pyscript.css" />
+    <script defer src="https://pyscript.net/latest/pyscript.js"></script>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f5f5f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 400px;
+            display: none;
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        input[type="file"], select, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #2173d1;
+            color: white;
+            cursor: pointer;
+            border: none;
+        }
+
+        button:hover {
+            background-color: #195bb5;
+        }
+
+        #output {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 20px;
+            text-align: left;
+        }
+
+        #output img {
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+
+        #output a {
+            color: #2173d1;
+            text-decoration: none;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        #output a:hover {
+            text-decoration: underline;
+        }
+
+        .loader {
+            border: 8px solid #f3f3f3;
+            border-top: 8px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+    <py-config>
+        [splashscreen]
+            enabled = false
+    </py-config>
+</head>
+<body>
+    <div id="loader" class="loader"></div>
+
+    <div class="container" id="converter-container">
+        <h1>Image Format Converter</h1>
+        <p>Select images to convert:</p>
+        <input type="file" id="input-file" accept="image/*" multiple />
+
+        <p>Select the output format:</p>
+        <select id="output-format">
+            <option value="JPEG">JPEG</option>
+            <option value="PNG">PNG</option>
+            <option value="WEBP">WEBP</option>
+            <option value="BMP">BMP</option>
+            <option value="TIFF">TIFF</option>
+        </select>
+
+        <button id="convert-button">Convert Images</button>
+        <button id="download-all-button" style="display: none;">Download All</button>
+        <div id="output"></div>
+    </div>
+    
+    <py-script>
+        import io
+        from js import document, Blob, URL, Uint8Array
+        from pyodide.ffi import create_proxy
+        import micropip
+        import asyncio
+        import zipfile
+
+        async def setup():
+            await micropip.install("pillow")
+            from PIL import Image
+
+            document.getElementById("loader").style.display = "none"
+            document.getElementById("converter-container").style.display = "block"
+            document.body.style.overflow = "auto"
+
+            converted_files = []  # Store converted images for bulk download
+
+            async def convert_images(event):
+                files = document.getElementById("input-file").files
+                if files.length == 0:
+                    output.innerHTML = '<p style="color:red;">Please select image files.</p>'
+                    return
+
+                output_format = document.getElementById("output-format").value
+                output.innerHTML = ""  # Clear previous output
+                converted_files.clear()  # Clear previous converted files
+
+                for i in range(files.length):
+                    input_file = files.item(i)
+                    array_buffer = await input_file.arrayBuffer()
+                    bytes_data = bytes(array_buffer.to_py())
+
+                    img = Image.open(io.BytesIO(bytes_data))
+
+                    output_buffer = io.BytesIO()
+                    if output_format == "JPEG":
+                        img = img.convert("RGB")
+                    img.save(output_buffer, format=output_format)
+                    output_buffer.seek(0)
+                    converted_data = output_buffer.read()
+
+                    uint8_array = Uint8Array.from_(converted_data)
+                    blob = Blob.new([uint8_array], {"type": f"image/{output_format.lower()}"})
+                    blob_url = URL.createObjectURL(blob)
+
+                    img_preview = document.createElement("img")
+                    img_preview.src = blob_url
+                    img_preview.style.maxWidth = "100%"
+
+                    download_link = document.createElement("a")
+                    download_link.href = blob_url
+                    download_link.download = input_file.name.rsplit('.', 1)[0] + '.' + output_format.lower()
+                    download_link.textContent = f"Download {output_format} - {input_file.name}"
+
+                    output.appendChild(img_preview)
+                    output.appendChild(download_link)
+                    output.appendChild(document.createElement("br"))
+
+                    # Store converted file for bulk download
+                    converted_files.append({"filename": download_link.download, "data": converted_data})
+
+                # Show the "Download All" button if files were converted
+                if converted_files:
+                    download_all_button.style.display = "block"
+
+            async def download_all(event):
+                # Create a zip file in memory
+                zip_buffer = io.BytesIO()
+                with zipfile.ZipFile(zip_buffer, "w") as zip_file:
+                    for file in converted_files:
+                        zip_file.writestr(file["filename"], file["data"])
+
+                # Create a Blob URL for the zip file
+                zip_blob = Blob.new([Uint8Array.from_(zip_buffer.getvalue())], {"type": "application/zip"})
+                zip_url = URL.createObjectURL(zip_blob)
+
+                # Trigger the download
+                all_download_link = document.createElement("a")
+                all_download_link.href = zip_url
+                all_download_link.download = "converted_images.zip"
+                all_download_link.click()
+
+            # Get the convert button and attach event handlers
+            convert_button = document.getElementById("convert-button")
+            download_all_button = document.getElementById("download-all-button")
+            output = document.getElementById("output")
+            convert_proxy = create_proxy(convert_images)
+            download_all_proxy = create_proxy(download_all)
+
+            convert_button.addEventListener("click", convert_proxy)
+            download_all_button.addEventListener("click", download_all_proxy)
+
+        asyncio.ensure_future(setup())
+    </py-script>
+</body>
+</html>
