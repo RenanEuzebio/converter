@@ -26,7 +26,6 @@
             text-align: center;
             width: 100%;
             max-width: 400px;
-            display: none;
         }
 
         h1 {
@@ -45,14 +44,47 @@
         }
 
         button {
-            background-color: #2173d1;
+            position: relative;
             color: white;
-            cursor: pointer;
+            cursor: not-allowed; /* Initially not clickable */
             border: none;
+            background-color: #ccc; /* Gray out the button */
+            transition: background-color 0.3s ease;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        button:hover {
+        button.enabled {
+            background-color: #2173d1; /* Active color */
+            cursor: pointer;
+        }
+
+        button:hover.enabled {
             background-color: #195bb5;
+        }
+
+        /* Spinner Styles */
+        .spinner {
+            border: 4px solid #ccc; /* Gray border */
+            border-top: 4px solid #2173d1; /* Blue border on top */
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            animation: spin 1s linear infinite;
+            position: absolute;
+            left: 15px;
+            display: none; /* Hidden initially */
+        }
+
+        button.loading .spinner {
+            display: block; /* Show spinner when loading */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
         #output {
@@ -79,24 +111,6 @@
         #output a:hover {
             text-decoration: underline;
         }
-
-        .loader {
-            border: 8px solid #f3f3f3;
-            border-top: 8px solid #3498db;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 2s linear infinite;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
     </style>
     <py-config>
         [splashscreen]
@@ -104,8 +118,6 @@
     </py-config>
 </head>
 <body>
-    <div id="loader" class="loader"></div>
-
     <div class="container" id="converter-container">
         <h1>Image Format Converter</h1>
         <p>Select images to convert:</p>
@@ -120,14 +132,17 @@
             <option value="TIFF">TIFF</option>
         </select>
 
-        <button id="convert-button">Convert Images</button>
+        <button id="convert-button" class="loading" disabled>
+            <div class="spinner"></div>
+            Loading...
+        </button>
         <button id="download-all-button" style="display: none;">Download All</button>
         <div id="output"></div>
     </div>
     
     <py-script>
         import io
-        from js import document, Blob, URL, Uint8Array
+        from js import document, Blob, URL, Uint8Array, console
         from pyodide.ffi import create_proxy
         import micropip
         import asyncio
@@ -137,9 +152,17 @@
             await micropip.install("pillow")
             from PIL import Image
 
-            document.getElementById("loader").style.display = "none"
-            document.getElementById("converter-container").style.display = "block"
-            document.body.style.overflow = "auto"
+            console.log("Python environment loaded.")
+
+            convert_button = document.getElementById("convert-button")
+            download_all_button = document.getElementById("download-all-button")
+            output = document.getElementById("output")
+
+            # Enable the convert button and remove loading state
+            convert_button.classList.remove("loading")
+            convert_button.classList.add("enabled")
+            convert_button.innerHTML = "Convert Images"
+            convert_button.disabled = False
 
             converted_files = []  # Store converted images for bulk download
 
@@ -152,6 +175,12 @@
                 output_format = document.getElementById("output-format").value
                 output.innerHTML = ""  # Clear previous output
                 converted_files.clear()  # Clear previous converted files
+
+                # Disable the button and show spinner
+                convert_button.disabled = True
+                convert_button.classList.add("loading")
+                convert_button.classList.remove("enabled")
+                convert_button.innerHTML = '<div class="spinner"></div> Converting...'
 
                 for i in range(files.length):
                     input_file = files.item(i)
@@ -187,6 +216,12 @@
                     # Store converted file for bulk download
                     converted_files.append({"filename": download_link.download, "data": converted_data})
 
+                # Re-enable the convert button
+                convert_button.disabled = False
+                convert_button.classList.remove("loading")
+                convert_button.classList.add("enabled")
+                convert_button.innerHTML = "Convert Images"
+
                 # Show the "Download All" button if files were converted
                 if converted_files:
                     download_all_button.style.display = "block"
@@ -209,9 +244,6 @@
                 all_download_link.click()
 
             # Get the convert button and attach event handlers
-            convert_button = document.getElementById("convert-button")
-            download_all_button = document.getElementById("download-all-button")
-            output = document.getElementById("output")
             convert_proxy = create_proxy(convert_images)
             download_all_proxy = create_proxy(download_all)
 
