@@ -14,24 +14,49 @@
             font-family: 'Roboto', sans-serif;
             display: flex;
             justify-content: center;
-            align-items: flex-start;
-            gap: 20px;
+            align-items: center;
             height: 100vh;
             background-color: #f4f6f9;
             color: #333;
             padding: 20px;
         }
-        
-        .container, .converted-list-container {
+
+        h1 {
+            font-size: 2.5em;
+            color: #000;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .main-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 40px;
+            width: 100%;
+            max-width: 1200px;
+        }
+
+        .content-container {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            width: 100%;
+        }
+
+        .container {
             background-color: #fff;
             padding: 25px;
             width: 100%;
             max-width: 500px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
 
-        h1, h2 {
+        h2 {
             font-size: 1.8em;
             text-align: center;
             margin-bottom: 20px;
@@ -43,6 +68,7 @@
             align-items: center;
             gap: 12px;
             margin-top: 15px;
+            width: 100%;
         }
 
         input[type="file"], input[type="text"], select {
@@ -80,6 +106,7 @@
             border: 1px solid #ddd;
             border-radius: 8px;
             margin-top: 10px;
+            width: 100%;
         }
 
         .thumbnail-item {
@@ -116,31 +143,36 @@
     </py-config>
 </head>
 <body>
-    <div class="container">
-        <h1>Image Input</h1>
-        <div class="input-section">
-            <input type="file" id="input-file" accept="image/*" multiple />
-            <button id="add-file-button">Add</button>
+    <div class="main-container">
+        <h1>Image Format Converter</h1>
+        <div class="content-container">
+            <div class="container">
+                <h2>Image Input</h2>
+                <div class="input-section">
+                    <input type="file" id="input-file" accept="image/*" multiple />
+                    <button id="add-file-button">Add</button>
+                </div>
+                <div class="input-section">
+                    <input type="text" id="input-url" placeholder="Enter image URL" />
+                    <button id="add-url-button">Add</button>
+                </div>
+                <div class="thumbnail-list" id="thumbnail-list"></div>
+                <div class="convert-section">
+                    <select id="format-select">
+                        <option value="JPEG">JPEG</option>
+                        <option value="PNG">PNG</option>
+                        <option value="WEBP">WEBP</option>
+                        <option value="BMP">BMP</option>
+                        <option value="TIFF">TIFF</option>
+                    </select>
+                    <button id="convert-button">Convert</button>
+                </div>
+            </div>
+            <div class="container">
+                <h2>Image Output</h2>
+                <div class="converted-list" id="converted-list"></div>
+            </div>
         </div>
-        <div class="input-section">
-            <input type="text" id="input-url" placeholder="Enter image URL" />
-            <button id="add-url-button">Add</button>
-        </div>
-        <div class="thumbnail-list" id="thumbnail-list"></div>
-        <div class="convert-section">
-            <select id="format-select">
-                <option value="JPEG">JPEG</option>
-                <option value="PNG">PNG</option>
-                <option value="WEBP">WEBP</option>
-                <option value="BMP">BMP</option>
-                <option value="TIFF">TIFF</option>
-            </select>
-            <button id="convert-button">Convert</button>
-        </div>
-    </div>
-    <div class="converted-list-container">
-        <h2>Converted Images</h2>
-        <div class="converted-list" id="converted-list"></div>
     </div>
 
     <!-- PyScript Section -->
@@ -165,6 +197,7 @@
                 item_data = {"type": "file", "data": file, "src": blob_url, "name": file.name}
                 items.append(item_data)
                 display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
+            document.getElementById("input-file").value = ""
 
         async def add_url(event):
             url = document.getElementById("input-url").value.strip()
@@ -175,6 +208,7 @@
                     item_data = {"type": "url", "data": byte_data, "src": url, "name": url.split("/")[-1]}
                     items.append(item_data)
                     display_thumbnail(url, url.split("/")[-1], thumbnail_list, item_data)
+                    document.getElementById("input-url").value = ""
                 except Exception as e:
                     console.log(f"Failed to fetch image from URL: {url}, error: {e}")
 
@@ -227,7 +261,6 @@
 
                 img = Image.open(io.BytesIO(byte_data))
 
-                # Convert images with a palette and transparency to RGBA
                 if img.mode == "P":
                     img = img.convert("RGBA")
 
