@@ -223,10 +223,21 @@
     <!-- PyScript Section -->
     <py-script>
         import io
-        from js import document, Blob, URL, Uint8Array, console, encodeURIComponent
+        from js import document, Blob, URL, Uint8Array, console, encodeURIComponent, setTimeout, clearTimeout, alert
         from pyodide.ffi import create_proxy
         import micropip
         import asyncio
+        import re
+
+        # Define multiple CORS proxies as fallbacks
+        CORS_PROXIES = [
+            "https://api.allorigins.win/raw?url=",
+            "https://cors.bridged.cc/",
+            "https://thingproxy.freeboard.io/fetch/"
+        ]
+
+        # Cache to store fetched images
+        cache = {}
 
         async def setup():
             await micropip.install("pillow")
@@ -234,19 +245,27 @@
 
             console.log("Python environment loaded.")
 
+            # Initialize DOM elements
             convert_button = document.getElementById("convert-button")
             output = document.getElementById("output")
             add_url_button = document.getElementById("add-url-button")
             input_url = document.getElementById("input-url")
             url_list = document.getElementById("url-list")
 
+            # Update Convert button to active state
             convert_button.classList.remove("loading")
             convert_button.classList.add("enabled")
             convert_button.innerHTML = "Convert Images"
-            convert_button.disabled = False
+            convert_button.disabled = True  # Initially disabled until items are added
 
-            items = []  
+            items = []  # List to store file and URL items
 
+            # Function to validate image URLs
+            def is_valid_image_url(url):
+                image_extensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.webp', '.tiff']
+                return any(url.lower().endswith(ext) for ext in image_extensions)
+
+            # Function to update the state of the Convert button
             def update_convert_button_state(*args):
                 has_files = any(item['type'] == 'file' for item in items)
                 has_urls = any(item['type'] == 'url' for item in items)
@@ -257,6 +276,7 @@
                     convert_button.classList.remove("enabled")
                     convert_button.disabled = True
 
+            # Event handler for file input changes
             def on_file_change(event):
                 files = document.getElementById("input-file").files
                 for i in range(files.length):
@@ -269,12 +289,14 @@
             file_input = document.getElementById("input-file")
             file_input.addEventListener("change", create_proxy(on_file_change))
 
+            # Event handler to remove items from the list
             def remove_item(event):
                 index = int(event.target.getAttribute("data-index"))
                 del items[index]
                 asyncio.ensure_future(render_list())
                 update_convert_button_state()
 
+            # Function to render the list of URLs and files
             async def render_list():
                 url_list.innerHTML = ""
                 for idx, item in enumerate(items):
@@ -283,12 +305,15 @@
                     thumbnail.className = "url-thumbnail"
                     
                     if item['type'] == 'url':
-                        cors_proxy = "https://api.allorigins.win/raw?url="
-                        proxied_url = cors_proxy + encodeURIComponent(item['data'])
+                        if not is_valid_image_url(item['data']):
+                            console.error(f"Invalid image URL: {item['data']}")
+                            continue
+                        proxied_url = get_proxied_url(item['data'])
                         thumbnail.src = proxied_url
                         
                         def handle_image_error(event):
                             event.target.style.display = "none"
+                            console.error(f"Failed to load image thumbnail for URL: {item['data']}")
                         
                         thumbnail.onerror = create_proxy(handle_image_error)
                         link = document.createElement("a")
@@ -304,6 +329,7 @@
                         
                         def handle_image_error(event):
                             event.target.style.display = "none"
+                            console.error(f"Failed to load image thumbnail for file: {item['data'].name}")
                         
                         thumbnail.onerror = create_proxy(handle_image_error)
                         link = document.createElement("a")
@@ -326,19 +352,31 @@
                     li.appendChild(remove_button)
                     url_list.appendChild(li)
 
+            # Function to get a proxied URL using the available CORS proxies
+            def get_proxied_url(url):
+                for proxy in CORS_PROXIES:
+                    proxied = proxy + encodeURIComponent(url)
+                    # Optionally, implement a test fetch here to check if the proxy is working
+                    return proxied
+                raise Exception("No working CORS proxy available.")
+
+            # Event handler to add a URL to the list
             def add_url(event):
                 url = input_url.value.strip()
-                if url:
+                if url and is_valid_image_url(url):
                     if not any(item['type'] == 'url' and item['data'] == url for item in items):
                         items.append({'type': 'url', 'data': url})
                         input_url.value = ""
                         asyncio.ensure_future(render_list())
                         update_convert_button_state()
                         update_add_url_button_state()
+                else:
+                    alert("Please enter a valid image URL.")
 
+            # Function to update the state of the Add URL button
             def update_add_url_button_state(*args):
                 url = input_url.value.strip()
-                if url:
+                if url and is_valid_image_url(url):
                     add_url_button.classList.add("enabled")
                     add_url_button.disabled = False
                 else:
@@ -348,6 +386,7 @@
             add_url_proxy = create_proxy(add_url)
             add_url_button.addEventListener("click", add_url_proxy)
 
+            # Event handler for Enter keypress in the URL input
             def on_input_keypress(event):
                 if event.key == "Enter":
                     event.preventDefault()
@@ -355,11 +394,25 @@
             
             input_url.addEventListener("keypress", create_proxy(on_input_keypress))
 
+            # Event handler for input changes in the URL input
             def on_url_input(event):
                 update_add_url_button_state()
 
             input_url.addEventListener("input", create_proxy(on_url_input))
 
+            # Function to fetch images with a timeout
+            async def fetch_with_timeout(url, timeout=10000):
+                try:
+                    controller = document.defaultView.AbortController.new()
+                    timer = setTimeout(create_proxy(lambda: controller.abort()), timeout)
+                    response = await document.defaultView.fetch(url, {"signal": controller.signal})
+                    clearTimeout(timer)
+                    return response
+                except Exception as e:
+                    console.error(f"Fetch timeout or error: {e}")
+                    raise e
+
+            # Function to convert images
             async def convert_images(event):
                 output_format = document.getElementById("output-format").value
                 output.innerHTML = ""
@@ -423,13 +476,16 @@
                     elif item['type'] == 'url':
                         url = item['data']
                         try:
-                            cors_proxy = "https://api.allorigins.win/raw?url="
-                            proxied_url = cors_proxy + encodeURIComponent(url)
-                            response = await document.defaultView.fetch(proxied_url)
-                            if not response.ok:
-                                raise Exception(f"HTTP error {response.status}")
-                            array_buffer = await response.arrayBuffer()
-                            bytes_data = bytes(array_buffer.to_py())
+                            if url in cache:
+                                bytes_data = cache[url]
+                            else:
+                                proxied_url = get_proxied_url(url)
+                                response = await fetch_with_timeout(proxied_url)
+                                if not response.ok:
+                                    raise Exception(f"HTTP error {response.status}")
+                                array_buffer = await response.arrayBuffer()
+                                bytes_data = bytes(array_buffer.to_py())
+                                cache[url] = bytes_data
 
                             img = Image.open(io.BytesIO(bytes_data))
                             if img.mode == 'P':
