@@ -96,6 +96,21 @@
             width: 100%;
         }
 
+        /* Gap between input fields and lists */
+        .thumbnail-list, .converted-list {
+            margin-top: 1em; /* Adds gap between input/output fields and lists */
+            display: flex;
+            flex-direction: column;
+            gap: 0.8em;
+            max-height: 150px;
+            overflow-y: auto;
+            padding: 0.8em;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            width: 100%;
+        }
+
         input[type="file"], input[type="text"], select {
             flex: 1;
             padding: 0.8em;
@@ -123,19 +138,6 @@
             transform: scale(1.1);
         }
 
-        .thumbnail-list, .converted-list {
-            display: flex;
-            flex-direction: column;
-            gap: 0.8em;
-            max-height: 150px;
-            overflow-y: auto;
-            padding: 0.8em;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            width: 100%;
-        }
-
         .thumbnail-item {
             display: flex;
             align-items: center;
@@ -154,6 +156,18 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+        }
+
+        .save-icon {
+            margin-left: 10px;
+            color: #2173d1;
+            font-size: 1.5em;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .save-icon:hover {
+            transform: scale(1.2);
         }
 
         .remove-btn {
@@ -318,11 +332,8 @@
                 save_link = document.createElement("a")
                 save_link.href = src
                 save_link.download = name
+                save_link.className = "save-icon"  # Apply save icon styling
                 save_link.textContent = "💾"
-                save_link.style.marginLeft = "10px"
-                save_link.style.color = "#2173d1"
-                save_link.style.fontSize = "20px"
-                save_link.style.cursor = "pointer"
                 thumbnail_item.appendChild(save_link)
 
             remove_btn = document.createElement("button")
