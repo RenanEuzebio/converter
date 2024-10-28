@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="1920"
+   height="1080"
+   viewBox="0 0 1920 1080"
+   version="1.1"
+   id="svg1"
+   inkscape:version="1.4 (86a8ad7, 2024-10-11)"
+   sodipodi:docname="morpha.svg"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <sodipodi:namedview
+     id="namedview1"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     inkscape:document-units="px"
+     inkscape:zoom="0.48584289"
+     inkscape:cx="1083.6837"
+     inkscape:cy="410.62657"
+     inkscape:window-width="1842"
+     inkscape:window-height="1057"
+     inkscape:window-x="70"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="layer1" />
+  <defs
+     id="defs1" />
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <text
+       xml:space="preserve"
+       style="font-size:466.667px;text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#000000"
+       x="119.11705"
+       y="716.38324"
+       id="text1"><tspan
+         sodipodi:role="line"
+         id="tspan1"
+         x="119.11705"
+         y="716.38324"
+         style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:466.667px;font-family:Inter;-inkscape-font-specification:'Inter Bold'"><tspan
+   style="fill:#5539cc;fill-opacity:1"
+   id="tspan2">Mor</tspan>ph<tspan
+   style="fill:#5539cc;fill-opacity:1"
+   id="tspan3">a</tspan></tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:466.667px;font-family:Inter;-inkscape-font-specification:'Inter Bold';text-align:start;writing-mode:lr-tb;direction:ltr;text-anchor:start;fill:#5539cc;fill-opacity:1"
+       x="1771.4349"
+       y="845.29639"
+       id="text4"><tspan
+         sodipodi:role="line"
+         id="tspan4"></tspan></text>
+    <path
+       sodipodi:type="star"
+       style="fill:#000000;fill-opacity:1"
+       id="path4"
+       inkscape:flatsided="false"
+       sodipodi:sides="3"
+       sodipodi:cx="829.59094"
+       sodipodi:cy="206.67003"
+       sodipodi:r1="135.04095"
+       sodipodi:r2="67.520477"
+       sodipodi:arg1="0.52359878"
+       sodipodi:arg2="1.5707963"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 946.53984,274.19051 -116.9489,0 -116.9489,0 58.47445,-101.28072 58.47445,-101.280716 58.47445,101.280716 z"
+       inkscape:transform-center-y="-25.755416"
+       transform="matrix(0.7013213,0,0,0.76289193,735.66713,170.8437)"
+       inkscape:transform-center-x="-5.8860956e-06" />
+    <path
+       sodipodi:type="star"
+       style="fill:#000000;fill-opacity:1"
+       id="path4-8"
+       inkscape:flatsided="false"
+       sodipodi:sides="3"
+       sodipodi:cx="829.59094"
+       sodipodi:cy="206.67003"
+       sodipodi:r1="135.04095"
+       sodipodi:r2="67.520477"
+       sodipodi:arg1="0.52359878"
+       sodipodi:arg2="1.5707963"
+       inkscape:rounded="0"
+       inkscape:randomized="0"
+       d="m 946.53984,274.19051 -116.9489,0 -116.9489,0 58.47445,-101.28072 58.47445,-101.280716 58.47445,101.280716 z"
+       inkscape:transform-center-y="25.755417"
+       transform="matrix(0.7013213,0,0,-0.76289193,456.85991,1018.9437)"
+       inkscape:transform-center-x="3.4113904e-05" />
+  </g>
+</svg>
