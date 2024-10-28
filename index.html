@@ -21,21 +21,24 @@
             background-color: #f4f6f9;
             color: #5539cc;
             padding: 0;
+            overflow-x: hidden; /* Prevents horizontal scrolling */
         }
 
         /* Header styling */
         .header {
             width: 100%;
             background-color: #fff;
-            padding: 20px 0;
+            padding: 10px 0;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
             display: flex;
             justify-content: center;
             align-items: center;
+            overflow: hidden;
         }
 
         .header img {
             max-width: 150px;
+            height: auto;
         }
 
         /* Main content styling */
@@ -43,30 +46,31 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 40px;
+            gap: 20px;
             width: 100%;
             max-width: 1200px;
             padding: 20px;
         }
 
         h1 {
-            font-size: 2.5em;
+            font-size: 2em;
             color: #000;
             text-align: center;
-            margin-bottom: 20px;
             font-weight: 700;
         }
 
         .content-container {
             display: flex;
-            justify-content: center;
-            gap: 40px;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
             width: 100%;
         }
 
+        /* Container styling */
         .container {
             background-color: #fff;
-            padding: 25px;
+            padding: 20px;
             width: 100%;
             max-width: 500px;
             border-radius: 12px;
@@ -77,13 +81,13 @@
         }
 
         h2 {
-            font-size: 1.8em;
+            font-size: 1.5em;
             text-align: center;
-            margin-bottom: 20px;
             color: #5539cc;
             font-weight: 700;
         }
 
+        /* Button and input styling */
         .input-section, .convert-section {
             display: flex;
             align-items: center;
@@ -109,11 +113,11 @@
             color: #fff;
             font-weight: bold;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         button:hover {
-            background-color: #195bb5;
+            transform: scale(1.1);
         }
 
         .thumbnail-list, .converted-list {
@@ -126,7 +130,6 @@
             background-color: #f9f9f9;
             border: 1px solid #ddd;
             border-radius: 8px;
-            margin-top: 10px;
             width: 100%;
         }
 
@@ -156,6 +159,41 @@
             color: #d11a2a;
             font-size: 20px;
             cursor: pointer;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .remove-btn:hover {
+            transform: scale(1.2);
+        }
+
+        /* Responsive adjustments */
+        @media (min-width: 769px) {
+            .content-container {
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+            }
+            .container {
+                max-width: 48%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header img {
+                max-width: 120px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            h2 {
+                font-size: 1.4em;
+            }
+
+            .main-container {
+                padding: 10px;
+            }
         }
     </style>
     <!-- PyScript Configuration with micropip -->
