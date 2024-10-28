@@ -14,22 +14,30 @@
             background-color: #f5f5f5;
             display: flex;
             justify-content: center;
-            align-items: center;
-            height: 100vh;
+            align-items: flex-start;
+            gap: 20px;
+            padding: 20px;
             margin: 0;
             overflow: hidden;
         }
 
-        .container {
+        .container, .output-container {
             background-color: white;
-            padding: 40px;
+            padding: 20px;
             border-radius: 12px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
             width: 100%;
             max-width: 600px;
             overflow-y: auto;
             max-height: 90vh;
+        }
+
+        .container {
+            text-align: center;
+        }
+
+        .output-container {
+            text-align: left;
         }
 
         h1 {
@@ -93,21 +101,14 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* Output Section Styling */
-        #output {
-            max-height: 300px;
-            overflow-y: auto;
-            margin-top: 20px;
-            text-align: left;
-        }
-
-        #output img {
+        /* Converted Image Display */
+        .output-container img {
             max-width: 100%;
             border-radius: 8px;
             margin-bottom: 10px;
         }
 
-        #output a {
+        .output-container a {
             color: #2173d1;
             text-decoration: none;
             font-weight: bold;
@@ -115,7 +116,7 @@
             margin-bottom: 10px;
         }
 
-        #output a:hover {
+        .output-container a:hover {
             text-decoration: underline;
         }
 
@@ -211,8 +212,11 @@
             <div class="spinner"></div>
             Loading...
         </button>
+    </div>
 
-        <!-- Output Section for Converted Images and Links -->
+    <!-- Separate Output Container -->
+    <div class="output-container" id="output-container">
+        <h2>Converted Images</h2>
         <div id="output"></div>
     </div>
     
@@ -223,32 +227,26 @@
         from pyodide.ffi import create_proxy
         import micropip
         import asyncio
-        import zipfile
 
         async def setup():
-            # Install required Python packages
             await micropip.install("pillow")
             from PIL import Image
 
             console.log("Python environment loaded.")
 
-            # Get DOM elements
             convert_button = document.getElementById("convert-button")
             output = document.getElementById("output")
             add_url_button = document.getElementById("add-url-button")
             input_url = document.getElementById("input-url")
             url_list = document.getElementById("url-list")
 
-            # Initialize buttons
             convert_button.classList.remove("loading")
             convert_button.classList.add("enabled")
             convert_button.innerHTML = "Convert Images"
             convert_button.disabled = False
 
-            # State variables
-            items = []  # Store both files and URLs as dictionaries
+            items = []  
 
-            # Function to update the state of the convert button
             def update_convert_button_state(*args):
                 has_files = any(item['type'] == 'file' for item in items)
                 has_urls = any(item['type'] == 'url' for item in items)
@@ -259,12 +257,10 @@
                     convert_button.classList.remove("enabled")
                     convert_button.disabled = True
 
-            # Event handler for file input changes
             def on_file_change(event):
                 files = document.getElementById("input-file").files
                 for i in range(files.length):
                     file = files.item(i)
-                    # Avoid adding duplicate files
                     if not any(item['type'] == 'file' and item['data'] == file for item in items):
                         items.append({'type': 'file', 'data': file})
                 asyncio.ensure_future(render_list())
@@ -273,37 +269,28 @@
             file_input = document.getElementById("input-file")
             file_input.addEventListener("change", create_proxy(on_file_change))
 
-            # Function to remove an item from the list
             def remove_item(event):
                 index = int(event.target.getAttribute("data-index"))
                 del items[index]
                 asyncio.ensure_future(render_list())
                 update_convert_button_state()
 
-            # Function to render the list with thumbnails
             async def render_list():
                 url_list.innerHTML = ""
                 for idx, item in enumerate(items):
                     li = document.createElement("li")
-                    
-                    # Thumbnail image
                     thumbnail = document.createElement("img")
                     thumbnail.className = "url-thumbnail"
                     
                     if item['type'] == 'url':
-                        # Use a CORS proxy to fetch the image
                         cors_proxy = "https://api.allorigins.win/raw?url="
                         proxied_url = cors_proxy + encodeURIComponent(item['data'])
                         thumbnail.src = proxied_url
                         
-                        # Define an error handling function for the thumbnail
                         def handle_image_error(event):
-                            event.target.style.display = "none"  # Hide thumbnail if it fails to load
+                            event.target.style.display = "none"
                         
-                        # Assign the error handler
                         thumbnail.onerror = create_proxy(handle_image_error)
-                        
-                        # Link to the original image
                         link = document.createElement("a")
                         link.href = item['data']
                         link.textContent = item['data']
@@ -312,18 +299,13 @@
                         link.style.marginRight = "10px"
                     
                     elif item['type'] == 'file':
-                        # Create a blob URL for the file
                         blob_url = URL.createObjectURL(item['data'])
                         thumbnail.src = blob_url
                         
-                        # Define an error handling function for the thumbnail
                         def handle_image_error(event):
-                            event.target.style.display = "none"  # Hide thumbnail if it fails to load
+                            event.target.style.display = "none"
                         
-                        # Assign the error handler
                         thumbnail.onerror = create_proxy(handle_image_error)
-                        
-                        # Link to download the file locally
                         link = document.createElement("a")
                         link.href = blob_url
                         link.textContent = item['data'].name
@@ -332,7 +314,6 @@
                         link.style.flex = "1"
                         link.style.marginRight = "10px"
                     
-                    # Remove button
                     remove_button = document.createElement("button")
                     remove_button.textContent = "✖"
                     remove_button.className = "remove-url"
@@ -340,26 +321,21 @@
                     remove_proxy = create_proxy(remove_item)
                     remove_button.addEventListener("click", remove_proxy)
 
-                    # Append elements to list item
                     li.appendChild(thumbnail)
                     li.appendChild(link)
                     li.appendChild(remove_button)
                     url_list.appendChild(li)
 
-            # Function to add a URL
             def add_url(event):
                 url = input_url.value.strip()
                 if url:
-                    # Avoid adding duplicate URLs
                     if not any(item['type'] == 'url' and item['data'] == url for item in items):
                         items.append({'type': 'url', 'data': url})
                         input_url.value = ""
-                        asyncio.ensure_future(render_list())  # Update list with new thumbnail
+                        asyncio.ensure_future(render_list())
                         update_convert_button_state()
-                        # After adding, disable the add URL button again
                         update_add_url_button_state()
 
-            # Function to update Add URL button state based on input
             def update_add_url_button_state(*args):
                 url = input_url.value.strip()
                 if url:
@@ -369,30 +345,25 @@
                     add_url_button.classList.remove("enabled")
                     add_url_button.disabled = True
 
-            # Event handler for Add URL button
             add_url_proxy = create_proxy(add_url)
             add_url_button.addEventListener("click", add_url_proxy)
 
-            # Allow pressing Enter to add URL
             def on_input_keypress(event):
                 if event.key == "Enter":
-                    event.preventDefault()  # Prevent form submission if any
+                    event.preventDefault()
                     add_url(event)
             
             input_url.addEventListener("keypress", create_proxy(on_input_keypress))
 
-            # Watch for input changes to enable/disable Add URL button
             def on_url_input(event):
                 update_add_url_button_state()
 
             input_url.addEventListener("input", create_proxy(on_url_input))
 
-            # Function to handle image conversion
             async def convert_images(event):
                 output_format = document.getElementById("output-format").value
-                output.innerHTML = ""  # Clear previous output
+                output.innerHTML = ""
 
-                # Function to generate a new filename with the new format
                 def generate_new_filename(original_name):
                     if '.' in original_name:
                         base_name = original_name.rsplit('.', 1)[0]
@@ -400,7 +371,6 @@
                         base_name = original_name
                     return f"{base_name}.{output_format.lower()}"
 
-                # Disable the button and show spinner
                 convert_button.disabled = True
                 convert_button.classList.add("loading")
                 convert_button.classList.remove("enabled")
@@ -414,7 +384,6 @@
 
                         try:
                             img = Image.open(io.BytesIO(bytes_data))
-                            # Convert 'P' mode images with transparency to 'RGBA'
                             if img.mode == 'P':
                                 img = img.convert('RGBA')
                         except Exception as e:
@@ -436,21 +405,17 @@
                         blob = Blob.new([uint8_array], {"type": f"image/{output_format.lower()}"})
                         blob_url = URL.createObjectURL(blob)
 
-                        # Generate new filename with the new format
                         new_filename = generate_new_filename(input_file.name)
 
-                        # Create image preview
                         img_preview = document.createElement("img")
                         img_preview.src = blob_url
                         img_preview.style.maxWidth = "100%"
 
-                        # Create download link
                         download_link = document.createElement("a")
                         download_link.href = blob_url
                         download_link.download = new_filename
                         download_link.textContent = f"Download {output_format} - {new_filename}"
 
-                        # Append to output
                         output.appendChild(img_preview)
                         output.appendChild(download_link)
                         output.appendChild(document.createElement("br"))
@@ -458,7 +423,6 @@
                     elif item['type'] == 'url':
                         url = item['data']
                         try:
-                            # Use the CORS proxy to fetch the image
                             cors_proxy = "https://api.allorigins.win/raw?url="
                             proxied_url = cors_proxy + encodeURIComponent(url)
                             response = await document.defaultView.fetch(proxied_url)
@@ -468,7 +432,6 @@
                             bytes_data = bytes(array_buffer.to_py())
 
                             img = Image.open(io.BytesIO(bytes_data))
-                            # Convert 'P' mode images with transparency to 'RGBA'
                             if img.mode == 'P':
                                 img = img.convert('RGBA')
                         except Exception as e:
@@ -490,37 +453,30 @@
                         blob = Blob.new([uint8_array], {"type": f"image/{output_format.lower()}"})
                         blob_url = URL.createObjectURL(blob)
 
-                        # Extract image name from URL or generate a unique name
                         image_name = url.split("/")[-1].split("?")[0] or f"image_{idx}"
                         new_image_name = generate_new_filename(image_name)
 
-                        # Create image preview
                         img_preview = document.createElement("img")
                         img_preview.src = blob_url
                         img_preview.style.maxWidth = "100%"
 
-                        # Create download link
                         download_link = document.createElement("a")
                         download_link.href = blob_url
                         download_link.download = new_image_name
                         download_link.textContent = f"Download {output_format} - {new_image_name}"
 
-                        # Append to output
                         output.appendChild(img_preview)
                         output.appendChild(download_link)
                         output.appendChild(document.createElement("br"))
 
-                # Re-enable the convert button
                 convert_button.disabled = False
                 convert_button.classList.remove("loading")
                 convert_button.classList.add("enabled")
                 convert_button.innerHTML = "Convert Images"
 
-            # Event handler for Convert button
             convert_proxy = create_proxy(convert_images)
             convert_button.addEventListener("click", convert_proxy)
 
-        # Initialize the setup asynchronously
         asyncio.ensure_future(setup())
     </py-script>
 </body>
