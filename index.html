@@ -64,6 +64,11 @@
             --transition-duration: 0.3s;
             --font-family: 'Inter', sans-serif;
             --button-text-color: #ffffff; /* White */
+
+            /* Toggle Switch Specific Variables */
+            --toggle-light: #d8dbe0; /* Light color for toggle background */
+            --toggle-dark: #28292c; /* Dark color for toggle background */
+            --toggle-thumb-color: #5539cc; /* Thumb color */
         }
 
         /* Dark Mode Variables */
@@ -78,6 +83,10 @@
             --box-shadow: none; /* Remove box-shadow in dark mode */
             --spinner-border-color: rgba(255, 255, 255, 0.1);
             --button-text-color: #ffffff; /* White */
+
+            /* Toggle Switch Specific Variables for Dark Mode */
+            --toggle-light: #5539cc; /* Swap light and dark for toggle in dark mode */
+            --toggle-dark: #d8dbe0;
         }
 
         /* Reset and Base Styling */
@@ -95,6 +104,7 @@
             flex-direction: column;
             min-height: 100vh;
             transition: background-color var(--transition-duration), color var(--transition-duration);
+            overflow-x: hidden; /* Prevent horizontal scrollbar */
         }
         a {
             color: var(--primary-color);
@@ -107,34 +117,66 @@
         /* Header Styling */
         .header {
             background-color: var(--secondary-color);
-            padding: 1em;
+            padding: 1em 2em; /* Increased padding for better spacing */
             box-shadow: var(--box-shadow);
             position: relative;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
         }
         .header img {
             max-width: 180px;
             height: auto;
         }
-        /* Dark Mode Toggle Button */
-        .dark-mode-toggle {
-            position: absolute;
-            top: 50%;
-            right: 1em;
-            transform: translateY(-50%);
-            background-color: var(--primary-color);
-            color: var(--button-text-color); /* White */
-            border: none;
-            border-radius: var(--border-radius);
-            padding: 0.5em 1em;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform var(--transition-duration), background-color var(--transition-duration);
+
+        /* Custom Toggle Switch Styling */
+        .toggle-switch {
+            width: 100px;
+            height: 50px;
+            position: relative;
         }
-        .dark-mode-toggle:hover {
-            transform: translateY(-50%) scale(1.05); /* Combine translate and scale */
-            /* Removed background-color change to behave like other buttons */
+
+        .toggle-switch .checkbox {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-switch .switch-label {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background-color: var(--toggle-dark);
+            border-radius: 25px;
+            cursor: pointer;
+            border: 3px solid var(--toggle-dark);
+            transition: background-color var(--transition-duration), border-color var(--transition-duration);
+        }
+
+        .toggle-switch .switch-label::before {
+            content: "";
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            box-shadow: inset 12px -4px 0px 0px var(--toggle-light);
+            background-color: var(--toggle-dark);
+            transition: transform var(--transition-duration), background-color var(--transition-duration), box-shadow var(--transition-duration);
+        }
+
+        .toggle-switch .checkbox:checked + .switch-label::before {
+            transform: translateX(50px);
+            background-color: var(--toggle-dark);
+            box-shadow: none;
+        }
+
+        .toggle-switch .checkbox:checked + .switch-label {
+            background-color: var(--toggle-light);
+            border-color: var(--toggle-light);
         }
 
         /* Main Content Styling */
@@ -144,6 +186,7 @@
             flex-direction: column;
             align-items: center;
             padding: 2em 1em;
+            width: 100%;
         }
         h1, h2, h3 {
             color: var(--heading-color); /* Dynamic based on theme */
@@ -406,6 +449,19 @@
                 padding: 0.6em 1em;
                 font-size: 0.9rem;
             }
+            .toggle-switch {
+                width: 80px;
+                height: 40px;
+            }
+            .toggle-switch .switch-label::before {
+                top: 5px;
+                left: 5px;
+                width: 20px;
+                height: 20px;
+            }
+            .toggle-switch .checkbox:checked + .switch-label::before {
+                transform: translateX(40px);
+            }
         }
     </style>
     <py-config>
@@ -415,7 +471,14 @@
 <body>
     <header class="header">
         <img id="logo" src="morpha.svg" alt="Morpha Logo - Free Online Image Format Converter">
-        <button class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Toggle Dark Mode">Dark Mode</button>
+        
+        <!-- Custom Toggle Switch for Dark Mode -->
+        <div class="toggle-switch">
+            <input type="checkbox" class="checkbox" id="dark-mode-toggle-checkbox">
+            <label for="dark-mode-toggle-checkbox" class="switch-label">
+                <div class="slider"></div>
+            </label>
+        </div>
     </header>
     <main class="main-container">
         <h1>Free Online Image Format Converter</h1>
@@ -471,24 +534,24 @@
     <section class="section-container">
         <h2>How to Convert Images</h2>
         <ol>
-            <li><strong><span class="purple-text">Select Images:</span></strong> Click on "Select Images" or "Add Directory" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
-            <li><strong><span class="purple-text">Choose Format:</span></strong> Select your desired output format from the dropdown menu.</li>
-            <li><strong><span class="purple-text">Convert Images:</span></strong> Click "Convert Images" to start the conversion process.</li>
-            <li><strong><span class="purple-text">Download:</span></strong> After conversion, download your images individually or as a ZIP file.</li>
+            <li><strong class="purple-text">Select Images:</strong> Click on "Select Images" or "Add Directory" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
+            <li><strong class="purple-text">Choose Format:</strong> Select your desired output format from the dropdown menu.</li>
+            <li><strong class="purple-text">Convert Images:</strong> Click "Convert Images" to start the conversion process.</li>
+            <li><strong class="purple-text">Download:</strong> After conversion, download your images individually or as a ZIP file.</li>
         </ol>
     </section>
 
     <section class="section-container">
         <h2>Supported Image Formats</h2>
         <ul>
-            <li><strong><span class="purple-text">JPEG:</span></strong> Widely used for digital photography and web images.</li>
-            <li><strong><span class="purple-text">PNG:</span></strong> Ideal for images requiring transparency.</li>
-            <li><strong><span class="purple-text">WEBP:</span></strong> Modern format offering superior compression.</li>
-            <li><strong><span class="purple-text">BMP:</span></strong> Standard format for Windows systems.</li>
-            <li><strong><span class="purple-text">TIFF:</span></strong> Preferred by professionals for high-quality images.</li>
-            <li><strong><span class="purple-text">ICO:</span></strong> Used for icons in applications.</li>
-            <li><strong><span class="purple-text">PPM:</span></strong> Simple format for pixel images.</li>
-            <li><strong><span class="purple-text">TGA:</span></strong> Commonly used in animation and gaming.</li>
+            <li><strong class="purple-text">JPEG:</strong> Widely used for digital photography and web images.</li>
+            <li><strong class="purple-text">PNG:</strong> Ideal for images requiring transparency.</li>
+            <li><strong class="purple-text">WEBP:</strong> Modern format offering superior compression.</li>
+            <li><strong class="purple-text">BMP:</strong> Standard format for Windows systems.</li>
+            <li><strong class="purple-text">TIFF:</strong> Preferred by professionals for high-quality images.</li>
+            <li><strong class="purple-text">ICO:</strong> Used for icons in applications.</li>
+            <li><strong class="purple-text">PPM:</strong> Simple format for pixel images.</li>
+            <li><strong class="purple-text">TGA:</strong> Commonly used in animation and gaming.</li>
         </ul>
     </section>
 
@@ -510,30 +573,33 @@
 
     <!-- Dark Mode Toggle Script -->
     <script>
-        const toggleButton = document.getElementById('dark-mode-toggle');
+        const toggleCheckbox = document.getElementById('dark-mode-toggle-checkbox');
         const logo = document.getElementById('logo');
         const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
 
         function setTheme(theme) {
             if (theme === 'dark') {
                 document.body.classList.add('dark-mode');
-                toggleButton.textContent = 'Light Mode';
                 logo.src = 'morpha_dark.svg';
             } else {
                 document.body.classList.remove('dark-mode');
-                toggleButton.textContent = 'Dark Mode';
                 logo.src = 'morpha.svg';
             }
         }
 
-        // Load theme from localStorage or system preference
+        // Initialize theme based on localStorage or system preference
         const currentTheme = localStorage.getItem('theme') || (prefersDarkScheme.matches ? 'dark' : 'light');
         setTheme(currentTheme);
+        toggleCheckbox.checked = currentTheme === 'dark';
 
-        toggleButton.addEventListener('click', () => {
-            const theme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
-            setTheme(theme);
-            localStorage.setItem('theme', theme);
+        toggleCheckbox.addEventListener('change', () => {
+            if (toggleCheckbox.checked) {
+                setTheme('dark');
+                localStorage.setItem('theme', 'dark');
+            } else {
+                setTheme('light');
+                localStorage.setItem('theme', 'light');
+            }
         });
     </script>
 
