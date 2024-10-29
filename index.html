@@ -88,7 +88,14 @@
             font-weight: 700;
         }
 
-        /* Spinner Styling */
+        /* Spinner styling */
+        .spinner-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 1em;
+        }
+
         .spinner {
             border: 4px solid rgba(0, 0, 0, 0.1);
             width: 36px;
@@ -96,16 +103,10 @@
             border-radius: 50%;
             border-left-color: #5539cc;
             animation: spin 1s linear infinite;
-            margin-top: 1em;
         }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
-        }
-
-        /* Hidden class */
-        .hidden {
-            display: none;
         }
 
         /* Button and input styling */
@@ -171,14 +172,13 @@
             object-fit: cover;
             border-radius: 4px;
         }
+
         .thumbnail-item span {
             flex: 1;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
-            max-width: 150px; /* Set a maximum width to prevent overflow */
         }
-
 
         .save-icon {
             margin-left: 10px;
@@ -258,6 +258,12 @@
                 max-width: 80px;
             }
         }
+
+        /* Input Content Hidden by Default */
+        .input-content {
+            display: none;
+            width: 100%;
+        }
     </style>
     <!-- PyScript Configuration with micropip -->
     <py-config>
@@ -274,13 +280,14 @@
     <div class="main-container">
         <h1>Image Format Converter</h1>
         <div class="content-container">
-            <!-- Image Input Container with Spinner -->
             <div class="container">
                 <h2>Image Input</h2>
-                <!-- Spinner Element -->
-                <div id="loading-spinner" class="spinner"></div>
-                <!-- Content Wrapper Initially Hidden -->
-                <div id="image-input-content" class="hidden">
+                <!-- Spinner Container -->
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                </div>
+                <!-- Input Content (Initially Hidden) -->
+                <div class="input-content">
                     <div class="input-section">
                         <input type="file" id="input-file" accept="image/*" multiple />
                         <button id="add-file-button">Add</button>
@@ -302,7 +309,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Image Output Container -->
             <div class="container">
                 <h2>Image Output</h2>
                 <div class="converted-list" id="converted-list"></div>
@@ -322,9 +328,9 @@
         await micropip.install("pillow")
         from PIL import Image
 
-        # Hide spinner and show content once Pillow is loaded
-        document.getElementById("loading-spinner").style.display = "none"
-        document.getElementById("image-input-content").style.display = "block"
+        # Hide spinner and show input content
+        document.querySelector('.spinner-container').style.display = 'none'
+        document.querySelector('.input-content').style.display = 'block'
 
         thumbnail_list = document.getElementById("thumbnail-list")
         converted_list = document.getElementById("converted-list")
