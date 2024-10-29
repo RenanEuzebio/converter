@@ -8,7 +8,7 @@
     <meta name="description" content="Easily convert images to formats like JPEG, PNG, WEBP, and more with Morpha.app's free online Image Format Converter. No downloads or ads required.">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://morpha.app/">
-    <link rel="icon" href="m.svg" type="image/svg+xml"> <!-- Updated favicon -->
+    <link rel="icon" href="m.svg" type="image/svg+xml">
 
     <!-- Open Graph Meta Tags -->
     <meta property="og:title" content="Free Online Image Format Converter | Morpha.app">
@@ -51,17 +51,33 @@
     <style>
         /* CSS Variables for easy theme management */
         :root {
-            --primary-color: #5539cc;
-            --secondary-color: #ffffff;
+            --primary-color: #5539cc; /* Purple */
+            --secondary-color: #ffffff; /* White */
             --accent-color: #2173d1;
             --background-color: #f4f6f9;
             --text-color: #333333;
-            --heading-color: #000000;
+            --heading-color: #000000; /* Black */
             --border-color: #e0e0e0;
             --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --spinner-border-color: rgba(0, 0, 0, 0.1);
             --border-radius: 8px;
             --transition-duration: 0.3s;
             --font-family: 'Inter', sans-serif;
+            --button-text-color: #ffffff; /* White */
+        }
+
+        /* Dark Mode Variables */
+        body.dark-mode {
+            --primary-color: #5539cc; /* Same purple as light mode */
+            --secondary-color: #1e1e1e; /* Dark background */
+            --accent-color: #2173d1;
+            --background-color: #121212;
+            --text-color: #e0e0e0;
+            --heading-color: #ffffff; /* White */
+            --border-color: #333333;
+            --box-shadow: none; /* Remove box-shadow in dark mode */
+            --spinner-border-color: rgba(255, 255, 255, 0.1);
+            --button-text-color: #ffffff; /* White */
         }
 
         /* Reset and Base Styling */
@@ -78,6 +94,7 @@
             display: flex;
             flex-direction: column;
             min-height: 100vh;
+            transition: background-color var(--transition-duration), color var(--transition-duration);
         }
         a {
             color: var(--primary-color);
@@ -92,13 +109,32 @@
             background-color: var(--secondary-color);
             padding: 1em;
             box-shadow: var(--box-shadow);
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            position: relative;
+            text-align: center;
+            transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
         }
         .header img {
             max-width: 180px;
             height: auto;
+        }
+        /* Dark Mode Toggle Button */
+        .dark-mode-toggle {
+            position: absolute;
+            top: 50%;
+            right: 1em;
+            transform: translateY(-50%);
+            background-color: var(--primary-color);
+            color: var(--button-text-color); /* White */
+            border: none;
+            border-radius: var(--border-radius);
+            padding: 0.5em 1em;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform var(--transition-duration), background-color var(--transition-duration);
+        }
+        .dark-mode-toggle:hover {
+            transform: translateY(-50%) scale(1.05); /* Combine translate and scale */
+            /* Removed background-color change to behave like other buttons */
         }
 
         /* Main Content Styling */
@@ -110,8 +146,9 @@
             padding: 2em 1em;
         }
         h1, h2, h3 {
-            color: var(--heading-color);
+            color: var(--heading-color); /* Dynamic based on theme */
             margin-bottom: 0.5em;
+            transition: color var(--transition-duration);
         }
         h1 {
             font-size: 2.5rem;
@@ -142,6 +179,7 @@
             min-width: 300px;
             max-width: 500px;
             position: relative;
+            transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
         }
 
         /* Form and Button Styling */
@@ -157,25 +195,29 @@
             padding: 0.8em;
             font-size: 1rem;
             border: 1px solid var(--border-color);
+            background-color: var(--secondary-color);
+            color: var(--text-color);
             border-radius: var(--border-radius);
             min-width: 0;
+            transition: background-color var(--transition-duration), color var(--transition-duration), border-color var(--transition-duration);
         }
         .input-section button,
         .convert-section button,
         #download-all-button {
             padding: 0.8em 1.5em;
             background-color: var(--primary-color);
-            color: var(--secondary-color);
+            color: var(--button-text-color); /* White */
             border: none;
             border-radius: var(--border-radius);
             font-size: 1rem;
             cursor: pointer;
-            transition: transform var(--transition-duration);
+            transition: transform var(--transition-duration), background-color var(--transition-duration);
         }
         .input-section button:hover,
         .convert-section button:hover,
         #download-all-button:hover {
             transform: scale(1.05);
+            /* Removed background-color change on hover */
         }
 
         /* File Inputs */
@@ -185,15 +227,18 @@
         .file-label {
             padding: 0.8em 1.5em;
             background-color: var(--primary-color);
-            color: var(--secondary-color);
+            color: var(--button-text-color); /* White */
             border: none;
             border-radius: var(--border-radius);
             font-size: 1rem;
             cursor: pointer;
-            transition: transform var(--transition-duration);
+            transition: transform var(--transition-duration), color var(--transition-duration);
         }
         .file-label:hover {
             transform: scale(1.05);
+            /* Removed background-color change on hover */
+            /* Ensure text color remains white */
+            color: var(--button-text-color);
         }
 
         /* Thumbnail and Converted Lists */
@@ -205,9 +250,10 @@
             max-height: 200px;
             overflow-y: auto;
             padding: 1em;
-            background-color: #fafafa;
+            background-color: var(--secondary-color);
             border: 1px solid var(--border-color);
             border-radius: var(--border-radius);
+            transition: background-color var(--transition-duration), border-color var(--transition-duration);
         }
         .thumbnail-item {
             display: flex;
@@ -220,6 +266,7 @@
             object-fit: cover;
             border-radius: var(--border-radius);
             border: 1px solid var(--border-color);
+            transition: border-color var(--transition-duration);
         }
         .thumbnail-item span {
             flex: 1;
@@ -232,10 +279,12 @@
             border: none;
             cursor: pointer;
             font-size: 1.2rem;
-            transition: transform var(--transition-duration);
+            color: var(--text-color);
+            transition: transform var(--transition-duration), color var(--transition-duration);
         }
         .thumbnail-item button:hover {
             transform: scale(1.2);
+            color: var(--primary-color);
         }
         .thumbnail-item .remove-btn {
             order: -1; /* Move the remove button to the left */
@@ -252,7 +301,7 @@
             align-items: center;
         }
         .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
+            border: 4px solid var(--spinner-border-color);
             width: 40px;
             height: 40px;
             border-radius: 50%;
@@ -276,17 +325,21 @@
             border-radius: var(--border-radius);
             box-shadow: var(--box-shadow);
             max-width: 800px;
+            transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
         }
         .section-container h2 {
             text-align: center;
             margin-bottom: 1em;
-            color: var(--primary-color);
+            /* Removed color override to inherit from --heading-color */
+            color: var(--heading-color);
+            transition: color var(--transition-duration);
         }
         .section-container p,
         .section-container ul,
         .section-container ol {
             text-align: left;
             color: var(--text-color);
+            transition: color var(--transition-duration);
         }
         .section-container ul,
         .section-container ol {
@@ -295,6 +348,31 @@
         }
         .section-container li {
             margin-bottom: 0.5em;
+        }
+
+        /* Style FAQ Questions (h3) to be purple in light mode and white in dark mode */
+        .faq-container h3 {
+            color: var(--primary-color); /* Purple in light mode */
+            transition: color var(--transition-duration);
+        }
+        body.dark-mode .faq-container h3 {
+            color: var(--heading-color); /* White in dark mode */
+        }
+
+        /* Style specific text to always be purple */
+        .purple-text {
+            color: var(--primary-color); /* Purple */
+        }
+
+        /* Style Save Links */
+        .save-link {
+            text-decoration: none;
+            color: var(--primary-color); /* Purple */
+            transition: transform var(--transition-duration);
+        }
+        .save-link:hover {
+            transform: scale(1.05);
+            text-decoration: none; /* Remove underline */
         }
 
         /* Spacing between converted list and download button */
@@ -336,11 +414,12 @@
 </head>
 <body>
     <header class="header">
-        <img src="morpha.svg" alt="Morpha Logo - Free Online Image Format Converter">
+        <img id="logo" src="morpha.svg" alt="Morpha Logo - Free Online Image Format Converter">
+        <button class="dark-mode-toggle" id="dark-mode-toggle" aria-label="Toggle Dark Mode">Dark Mode</button>
     </header>
     <main class="main-container">
         <h1>Free Online Image Format Converter</h1>
-        <p>Morpha Image Format Converter allows you to convert images to various formats quickly and easily. With support for <strong>JPEG, PNG, WEBP, BMP, TIFF, ICO, PPM, and TGA</strong>, you can ensure compatibility across different platforms and uses.</p>
+        <p>Morpha Image Format Converter allows you to convert images to various formats quickly and easily. With support for <strong class="purple-text">JPEG, PNG, WEBP, BMP, TIFF, ICO, PPM</strong> and <strong class="purple-text">TGA</strong>, you can ensure compatibility across different platforms and uses.</p>
 
         <div class="content-container">
             <div class="container">
@@ -350,7 +429,7 @@
                 </div>
                 <div class="input-content">
                     <div class="input-section">
-                        <label for="input-file" class="file-label">Add Files</label>
+                        <label for="input-file" class="file-label">Select Images</label>
                         <input type="file" id="input-file" accept="image/*" multiple>
                         <label for="directory-file" class="file-label">Add Directory</label>
                         <input type="file" id="directory-file" accept="image/*" webkitdirectory>
@@ -371,14 +450,14 @@
                             <option value="PPM">PPM</option>
                             <option value="TGA">TGA</option>
                         </select>
-                        <button id="convert-button">Convert</button>
+                        <button id="convert-button">Convert Images</button>
                     </div>
                 </div>
             </div>
             <div class="container">
                 <h2>Image Output</h2>
                 <div class="converted-list" id="converted-list"></div>
-                <button id="download-all-button" style="display: none;">Download All</button>
+                <button id="download-all-button" style="display: none;">Download</button>
             </div>
         </div>
     </main>
@@ -392,24 +471,24 @@
     <section class="section-container">
         <h2>How to Convert Images</h2>
         <ol>
-            <li><strong>Select Images:</strong> Click on "Add Files" or "Add Directory" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
-            <li><strong>Choose Format:</strong> Select your desired output format from the dropdown menu.</li>
-            <li><strong>Convert Images:</strong> Click "Convert" to start the conversion process.</li>
-            <li><strong>Download:</strong> After conversion, download your images individually or as a ZIP file.</li>
+            <li><strong><span class="purple-text">Select Images:</span></strong> Click on "Select Images" or "Add Directory" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
+            <li><strong><span class="purple-text">Choose Format:</span></strong> Select your desired output format from the dropdown menu.</li>
+            <li><strong><span class="purple-text">Convert Images:</span></strong> Click "Convert Images" to start the conversion process.</li>
+            <li><strong><span class="purple-text">Download:</span></strong> After conversion, download your images individually or as a ZIP file.</li>
         </ol>
     </section>
 
     <section class="section-container">
         <h2>Supported Image Formats</h2>
         <ul>
-            <li><strong>JPEG:</strong> Widely used for digital photography and web images.</li>
-            <li><strong>PNG:</strong> Ideal for images requiring transparency.</li>
-            <li><strong>WEBP:</strong> Modern format offering superior compression.</li>
-            <li><strong>BMP:</strong> Standard format for Windows systems.</li>
-            <li><strong>TIFF:</strong> Preferred by professionals for high-quality images.</li>
-            <li><strong>ICO:</strong> Used for icons in applications.</li>
-            <li><strong>PPM:</strong> Simple format for pixel images.</li>
-            <li><strong>TGA:</strong> Commonly used in animation and gaming.</li>
+            <li><strong><span class="purple-text">JPEG:</span></strong> Widely used for digital photography and web images.</li>
+            <li><strong><span class="purple-text">PNG:</span></strong> Ideal for images requiring transparency.</li>
+            <li><strong><span class="purple-text">WEBP:</span></strong> Modern format offering superior compression.</li>
+            <li><strong><span class="purple-text">BMP:</span></strong> Standard format for Windows systems.</li>
+            <li><strong><span class="purple-text">TIFF:</span></strong> Preferred by professionals for high-quality images.</li>
+            <li><strong><span class="purple-text">ICO:</span></strong> Used for icons in applications.</li>
+            <li><strong><span class="purple-text">PPM:</span></strong> Simple format for pixel images.</li>
+            <li><strong><span class="purple-text">TGA:</span></strong> Commonly used in animation and gaming.</li>
         </ul>
     </section>
 
@@ -428,6 +507,35 @@
         <p>Your privacy is our priority. We do not store your images after conversion.</p>
     </section>
     <!-- End of Additional Content -->
+
+    <!-- Dark Mode Toggle Script -->
+    <script>
+        const toggleButton = document.getElementById('dark-mode-toggle');
+        const logo = document.getElementById('logo');
+        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+
+        function setTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                toggleButton.textContent = 'Light Mode';
+                logo.src = 'morpha_dark.svg';
+            } else {
+                document.body.classList.remove('dark-mode');
+                toggleButton.textContent = 'Dark Mode';
+                logo.src = 'morpha.svg';
+            }
+        }
+
+        // Load theme from localStorage or system preference
+        const currentTheme = localStorage.getItem('theme') || (prefersDarkScheme.matches ? 'dark' : 'light');
+        setTheme(currentTheme);
+
+        toggleButton.addEventListener('click', () => {
+            const theme = document.body.classList.contains('dark-mode') ? 'light' : 'dark';
+            setTheme(theme);
+            localStorage.setItem('theme', theme);
+        });
+    </script>
 
     <py-script>
         import io
@@ -522,6 +630,7 @@
                 save_link.innerHTML = "&#128190;"  # Floppy disk symbol
                 save_link.style.fontSize = "1.2rem"
                 save_link.style.marginLeft = "0.5em"
+                save_link.className = "save-link"  # Added class for styling
                 thumbnail_item.appendChild(save_link)
                 converted_items.append(item_data)
 
