@@ -1,28 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Basic Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Image Format Converter</title>
+    <title>Free Online Image Format Converter | Morpha.app</title>
+    <meta name="description" content="Easily convert images to formats like JPEG, PNG, WEBP, and more with Morpha.app's free online Image Format Converter. No downloads or ads required.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://morpha.app/">
+    <link rel="icon" href="morpha.svg" type="image/svg+xml">
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="Free Online Image Format Converter | Morpha.app">
+    <meta property="og:description" content="Easily convert images to formats like JPEG, PNG, WEBP, and more with Morpha.app's free online Image Format Converter. No downloads or ads required.">
+    <meta property="og:image" content="https://morpha.app/morpha.svg">
+    <meta property="og:url" content="https://morpha.app/">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free Online Image Format Converter | Morpha.app">
+    <meta name="twitter:description" content="Easily convert images to formats like JPEG, PNG, WEBP, and more with Morpha.app's free online Image Format Converter. No downloads or ads required.">
+    <meta name="twitter:image" content="https://morpha.app/morpha.svg">
+
+    <!-- Styles and Scripts -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.css">
     <script type="module" src="https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "http://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Image Format Converter",
+        "url": "https://morpha.app/",
+        "logo": "https://morpha.app/morpha.svg",
+        "description": "An online tool to convert image formats including JPEG, PNG, WEBP, and more.",
+        "applicationCategory": "MultimediaApplication",
+        "operatingSystem": "All",
+        "offers": {
+            "@type": "Offer",
+            "price": "0",
+            "priceCurrency": "USD"
+        }
+    }
+    </script>
+
+    <!-- Custom Styles -->
     <style>
-        /* Reset and base styling */
+        /* Reset and Base Styling */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: 'Inter', sans-serif;
             display: flex;
             flex-direction: column;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             background-color: #f4f6f9;
             color: #5539cc;
             padding: 0;
             overflow-x: hidden;
         }
 
-        /* Header styling */
+        /* Header Styling */
         .header {
             width: 100%;
             background-color: #fff;
@@ -39,7 +80,7 @@
             height: auto;
         }
 
-        /* Main content styling */
+        /* Main Content Styling */
         .main-container {
             display: flex;
             flex-direction: column;
@@ -55,6 +96,16 @@
             color: #000;
             text-align: center;
             font-weight: 700;
+            margin-bottom: 0.5em;
+        }
+
+        p {
+            font-size: 1.1em;
+            text-align: center;
+            color: #333;
+            max-width: 800px;
+            line-height: 1.6;
+            margin-bottom: 1.5em;
         }
 
         .content-container {
@@ -65,7 +116,7 @@
             width: 100%;
         }
 
-        /* Container styling */
+        /* Tool Container Styling */
         .container {
             background-color: #fff;
             padding: 1.5em;
@@ -84,9 +135,28 @@
             text-align: center;
             color: #5539cc;
             font-weight: 700;
+            margin-bottom: 0.5em;
         }
 
-        /* Spinner styling */
+        h3 {
+            font-size: 1.4em;
+            color: #000;
+            font-weight: 600;
+            margin-top: 1em;
+            text-align: center; /* Ensure h3 is centered */
+        }
+
+        ul, ol {
+            margin-left: 1.5em;
+            margin-bottom: 1em;
+            color: #333;
+        }
+
+        li {
+            margin-bottom: 0.5em;
+        }
+
+        /* Spinner Styling */
         .spinner-container {
             display: flex;
             justify-content: center;
@@ -107,7 +177,7 @@
             to { transform: rotate(360deg); }
         }
 
-        /* Button and input styling */
+        /* Button and Input Styling */
         .input-section, .convert-section {
             display: flex;
             align-items: center;
@@ -116,7 +186,7 @@
             width: 100%;
         }
 
-        /* Gap between input fields and lists */
+        /* Thumbnail and Converted Lists */
         .thumbnail-list, .converted-list {
             margin-top: 1em;
             display: flex;
@@ -207,7 +277,7 @@
             transform: scale(1.2);
         }
 
-        /* Responsive adjustments */
+        /* Responsive Adjustments */
         @media (min-width: 769px) {
             .content-container {
                 flex-direction: row;
@@ -269,6 +339,53 @@
         #download-all-button {
             margin-top: 1em;
         }
+
+        /* Additional Content Styling */
+        .section-container {
+            background-color: #fff;
+            padding: 1.5em;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            margin-top: 3em;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .section-container h2 {
+            color: #5539cc;
+            margin-bottom: 1em;
+            text-align: center;
+        }
+
+        /* General text alignment for sections */
+        .section-container p, .section-container li {
+            color: #333;
+            line-height: 1.6;
+            text-align: left; /* Default to left-aligned */
+        }
+
+        /* FAQ styling: Center text with additional spacing */
+        .faq-container h3 {
+            text-align: center;
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+        }
+        .faq-container p {
+            text-align: center;
+            margin-bottom: 1.5em; /* Extra space between each Q&A */
+            line-height: 1.8;
+        }
+
+        /* Ensure lists are left-aligned and centered within the container */
+        .section-container ol, .section-container ul {
+            text-align: left; /* Keep lists left-aligned for readability */
+            max-width: 600px;
+            margin: 0 auto;
+            padding-left: 1.5em;
+        }
     </style>
     <py-config>
         packages = ["micropip"]
@@ -276,10 +393,12 @@
 </head>
 <body>
     <div class="header">
-        <img src="morpha.svg" alt="Morpha Logo">
+        <img src="morpha.svg" alt="Morpha Logo - Free Online Image Format Converter">
     </div>
     <div class="main-container">
-        <h1>Image Format Converter</h1>
+        <h1>Free Online Image Format Converter</h1>
+        <p>Morpha Image Format Converter allows you to convert images to various formats quickly and easily. With support for <strong>JPEG, PNG, WEBP, BMP, TIFF, ICO, PPM, and TGA</strong>, you can ensure compatibility across different platforms and uses.</p>
+
         <div class="content-container">
             <div class="container">
                 <h2>Image Input</h2>
@@ -322,6 +441,52 @@
             </div>
         </div>
     </div>
+
+    <!-- Additional SEO-Optimized Content Below the Tool -->
+    <div class="section-container">
+        <h2>Why Choose Morpha Image Format Converter?</h2>
+        <p>Converting images has never been easier. Morpha.app offers a seamless free experience, allowing you to convert multiple images at once without any software installation or intrusive ads.</p>
+    </div>
+
+    <div class="section-container">
+        <h2>How to Convert Images Online</h2>
+        <ol>
+            <li><strong>Select Images:</strong> Click on "Add Files" or "Add Directory" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
+            <li><strong>Choose Format:</strong> Select your desired output format from the dropdown menu.</li>
+            <li><strong>Convert Images:</strong> Click "Convert" to start the conversion process.</li>
+            <li><strong>Download:</strong> After conversion, download your images individually or as a ZIP file.</li>
+        </ol>
+    </div>
+
+    <div class="section-container">
+        <h2>Supported Image Formats</h2>
+        <ul>
+            <li><strong>JPEG:</strong> Widely used for digital photography and web images.</li>
+            <li><strong>PNG:</strong> Ideal for images requiring transparency.</li>
+            <li><strong>WEBP:</strong> Modern format offering superior compression.</li>
+            <li><strong>BMP:</strong> Standard format for Windows systems.</li>
+            <li><strong>TIFF:</strong> Preferred by professionals for high-quality images.</li>
+            <li><strong>ICO:</strong> Used for icons in applications.</li>
+            <li><strong>PPM:</strong> Simple format for pixel images.</li>
+            <li><strong>TGA:</strong> Commonly used in animation and gaming.</li>
+        </ul>
+    </div>
+
+    <div class="section-container faq-container">
+        <h2>Frequently Asked Questions</h2>
+        <h3>Is the converter free to use?</h3>
+        <p>Yes, our image format converter is completely free with no hidden costs and no ads.</p>
+
+        <h3>Do I need to register or sign up?</h3>
+        <p>No registration is required. You can convert images instantly.</p>
+
+        <h3>Is there a limit to the number of images I can convert?</h3>
+        <p>There are no limits. Convert as many images as you need.</p>
+
+        <h3>Are my images secure?</h3>
+        <p>Your privacy is our priority. We do not store your images after conversion.</p>
+    </div>
+    <!-- End of Additional Content -->
 
     <py-script>
         import io
@@ -388,6 +553,7 @@
             # Create Image element
             img = document.createElement("img")
             img.src = src
+            img.alt = name  # Added alt attribute for SEO
 
             # Create Name span
             text = document.createElement("span")
@@ -502,4 +668,3 @@
     </py-script>
 </body>
 </html>
-
