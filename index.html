@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Format Converter</title>
-    <!-- PyScript CSS and JS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.css">
     <script type="module" src="https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.js"></script>
-    <!-- Inter Font -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <style>
         /* Reset and base styling */
@@ -264,29 +262,28 @@
             display: none;
             width: 100%;
         }
+
+        /* Added: Margin-top for Download All button */
+        #download-all-button {
+            margin-top: 1em; /* Proportional to existing gaps */
+        }
     </style>
-    <!-- PyScript Configuration with micropip -->
     <py-config>
         packages = ["micropip"]
     </py-config>
 </head>
 <body>
-    <!-- Header with logo -->
     <div class="header">
         <img src="morpha.svg" alt="Morpha Logo">
     </div>
-
-    <!-- Main content -->
     <div class="main-container">
         <h1>Image Format Converter</h1>
         <div class="content-container">
             <div class="container">
                 <h2>Image Input</h2>
-                <!-- Spinner Container -->
                 <div class="spinner-container">
                     <div class="spinner"></div>
                 </div>
-                <!-- Input Content (Initially Hidden) -->
                 <div class="input-content">
                     <div class="input-section">
                         <input type="file" id="input-file" accept="image/*" multiple />
@@ -295,6 +292,10 @@
                     <div class="input-section">
                         <input type="text" id="input-url" placeholder="Enter image URL" />
                         <button id="add-url-button">Add</button>
+                    </div>
+                    <div class="input-section">
+                        <input type="file" id="directory-file" accept="image/*" webkitdirectory />
+                        <button id="add-directory-button">Add Directory</button>
                     </div>
                     <div class="thumbnail-list" id="thumbnail-list"></div>
                     <div class="convert-section">
@@ -312,13 +313,14 @@
             <div class="container">
                 <h2>Image Output</h2>
                 <div class="converted-list" id="converted-list"></div>
+                <button id="download-all-button" style="display: none;">Download All</button>
             </div>
         </div>
     </div>
 
-    <!-- PyScript Section -->
     <py-script>
         import io
+        import zipfile
         from js import document, Blob, URL, Uint8Array, console
         import micropip
         from pyodide.http import pyfetch
@@ -328,13 +330,13 @@
         await micropip.install("pillow")
         from PIL import Image
 
-        # Hide spinner and show input content
+        # Initializing the lists
         document.querySelector('.spinner-container').style.display = 'none'
         document.querySelector('.input-content').style.display = 'block'
-
         thumbnail_list = document.getElementById("thumbnail-list")
         converted_list = document.getElementById("converted-list")
         items = []
+        converted_items = []
 
         async def add_file(event):
             files = document.getElementById("input-file").files
@@ -359,6 +361,17 @@
                 except Exception as e:
                     console.log(f"Failed to fetch image from URL: {url}, error: {e}")
 
+        async def add_directory(event):
+            files = document.getElementById("directory-file").files
+            for i in range(files.length):
+                file = files.item(i)
+                if file.type.startswith("image/"):
+                    blob_url = URL.createObjectURL(file)
+                    item_data = {"type": "file", "data": file, "src": blob_url, "name": file.name}
+                    items.append(item_data)
+                    display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
+            document.getElementById("directory-file").value = ""
+
         def display_thumbnail(src, name, container, item_data, is_converted=False):
             thumbnail_item = document.createElement("div")
             thumbnail_item.className = "thumbnail-item"
@@ -373,9 +386,10 @@
                 save_link = document.createElement("a")
                 save_link.href = src
                 save_link.download = name
-                save_link.className = "save-icon"  # Apply save icon styling
+                save_link.className = "save-icon"
                 save_link.textContent = "💾"
                 thumbnail_item.appendChild(save_link)
+                converted_items.append(item_data)
 
             remove_btn = document.createElement("button")
             remove_btn.textContent = "❌"
@@ -394,6 +408,7 @@
 
         async def convert_images(event):
             converted_list.innerHTML = ""
+            converted_items.clear()
             selected_format = document.getElementById("format-select").value
 
             for item in items:
@@ -404,7 +419,6 @@
                     byte_data = item["data"]
 
                 img = Image.open(io.BytesIO(byte_data))
-
                 if img.mode == "P":
                     img = img.convert("RGBA")
 
@@ -421,14 +435,34 @@
                 blob_url = URL.createObjectURL(converted_blob)
 
                 display_thumbnail(blob_url, download_name, converted_list, item, is_converted=True)
+            document.getElementById("download-all-button").style.display = 'block'
 
+        def download_all(event):
+            zip_io = io.BytesIO()
+            with zipfile.ZipFile(zip_io, mode="w", compression=zipfile.ZIP_DEFLATED) as zip_file:
+                for item in converted_items:
+                    array_buffer = Uint8Array.from_(item['data']).to_py() if item["type"] == "file" else item["data"]
+                    zip_file.writestr(item['name'], array_buffer)
+            zip_blob = Blob.new([Uint8Array.from_(zip_io.getvalue())], {"type": "application/zip"})
+            zip_url = URL.createObjectURL(zip_blob)
+            download_link = document.createElement("a")
+            download_link.href = zip_url
+            download_link.download = "converted_images.zip"
+            download_link.click()
+
+        # Proxy creation for events
         add_file_proxy = create_proxy(add_file)
         add_url_proxy = create_proxy(add_url)
+        add_directory_proxy = create_proxy(add_directory)
         convert_images_proxy = create_proxy(convert_images)
+        download_all_proxy = create_proxy(download_all)
 
+        # Event listeners for buttons
         document.getElementById("add-file-button").addEventListener("click", add_file_proxy)
         document.getElementById("add-url-button").addEventListener("click", add_url_proxy)
+        document.getElementById("add-directory-button").addEventListener("click", add_directory_proxy)
         document.getElementById("convert-button").addEventListener("click", convert_images_proxy)
+        document.getElementById("download-all-button").addEventListener("click", download_all_proxy)
     </py-script>
 </body>
 </html>
