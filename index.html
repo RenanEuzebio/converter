@@ -49,342 +49,285 @@
 
     <!-- Custom Styles -->
     <style>
+        /* CSS Variables for easy theme management */
+        :root {
+            --primary-color: #5539cc;
+            --secondary-color: #ffffff;
+            --accent-color: #2173d1;
+            --background-color: #f4f6f9;
+            --text-color: #333333;
+            --heading-color: #000000;
+            --border-color: #e0e0e0;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --border-radius: 8px;
+            --transition-duration: 0.3s;
+            --font-family: 'Inter', sans-serif;
+        }
+
         /* Reset and Base Styling */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: var(--font-family);
+            background-color: var(--background-color);
+            color: var(--text-color);
+            line-height: 1.6;
             display: flex;
             flex-direction: column;
-            align-items: center;
             min-height: 100vh;
-            background-color: #f4f6f9;
-            color: #5539cc;
-            padding: 0;
-            overflow-x: hidden;
+        }
+        a {
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
         }
 
         /* Header Styling */
         .header {
-            width: 100%;
-            background-color: #fff;
-            padding: 1em 0;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background-color: var(--secondary-color);
+            padding: 1em;
+            box-shadow: var(--box-shadow);
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
         }
-
         .header img {
-            max-width: 150px;
+            max-width: 180px;
             height: auto;
         }
 
         /* Main Content Styling */
         .main-container {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2em;
-            width: 100%;
-            max-width: 1200px;
-            padding: 1em;
+            padding: 2em 1em;
         }
-
-        h1 {
-            font-size: 2.5em;
-            color: #000;
-            text-align: center;
-            font-weight: 700;
+        h1, h2, h3 {
+            color: var(--heading-color);
             margin-bottom: 0.5em;
         }
-
-        p {
-            font-size: 1.1em;
+        h1 {
+            font-size: 2.5rem;
             text-align: center;
-            color: #333;
+        }
+        p {
+            font-size: 1.1rem;
+            text-align: center;
             max-width: 800px;
-            line-height: 1.6;
             margin-bottom: 1.5em;
         }
 
+        /* Content Containers */
         .content-container {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
             gap: 2em;
             width: 100%;
+            max-width: 1200px;
         }
-
-        /* Tool Container Styling */
         .container {
-            background-color: #fff;
-            padding: 1.5em;
-            width: 100%;
+            background-color: var(--secondary-color);
+            padding: 2em;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            flex: 1;
+            min-width: 300px;
             max-width: 500px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             position: relative;
         }
 
-        h2 {
-            font-size: 1.8em;
-            text-align: center;
-            color: #5539cc;
-            font-weight: 700;
-            margin-bottom: 0.5em;
-        }
-
-        h3 {
-            font-size: 1.4em;
-            color: #000;
-            font-weight: 600;
-            margin-top: 1em;
-            text-align: center; /* Ensure h3 is centered */
-        }
-
-        ul, ol {
-            margin-left: 1.5em;
-            margin-bottom: 1em;
-            color: #333;
-        }
-
-        li {
-            margin-bottom: 0.5em;
-        }
-
-        /* Spinner Styling */
-        .spinner-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 1em;
-        }
-
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border-left-color: #5539cc;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Button and Input Styling */
+        /* Form and Button Styling */
         .input-section, .convert-section {
             display: flex;
-            align-items: center;
+            flex-wrap: wrap;
             gap: 1em;
             margin-top: 1em;
-            width: 100%;
+        }
+        .input-section input[type="text"],
+        .convert-section select {
+            flex: 1;
+            padding: 0.8em;
+            font-size: 1rem;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            min-width: 0;
+        }
+        .input-section button,
+        .convert-section button,
+        #download-all-button {
+            padding: 0.8em 1.5em;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform var(--transition-duration);
+        }
+        .input-section button:hover,
+        .convert-section button:hover,
+        #download-all-button:hover {
+            transform: scale(1.05);
+        }
+
+        /* File Inputs */
+        input[type="file"] {
+            display: none;
+        }
+        .file-label {
+            padding: 0.8em 1.5em;
+            background-color: var(--primary-color);
+            color: var(--secondary-color);
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform var(--transition-duration);
+        }
+        .file-label:hover {
+            transform: scale(1.05);
         }
 
         /* Thumbnail and Converted Lists */
         .thumbnail-list, .converted-list {
-            margin-top: 1em;
+            margin-top: 1.5em;
             display: flex;
             flex-direction: column;
-            gap: 0.8em;
-            max-height: 150px;
+            gap: 1em;
+            max-height: 200px;
             overflow-y: auto;
-            padding: 0.8em;
-            background-color: #f9f9f9;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            width: 100%;
+            padding: 1em;
+            background-color: #fafafa;
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
         }
-
-        input[type="file"], input[type="text"], select {
-            flex: 1;
-            padding: 0.8em;
-            font-size: 1em;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            color: #333;
-            min-width: 0;
-        }
-
-        input[type="file"] {
-            display: none;
-        }
-
-        button {
-            padding: 0.8em 1em;
-            border: none;
-            border-radius: 6px;
-            background-color: #5539cc;
-            color: #fff;
-            font-weight: bold;
-            font-size: 1em;
-            cursor: pointer;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-            min-width: 0;
-        }
-
-        button:hover {
-            transform: scale(1.1);
-        }
-
         .thumbnail-item {
             display: flex;
             align-items: center;
-            gap: 0.8em;
+            gap: 1em;
         }
-
         .thumbnail-item img {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             object-fit: cover;
-            border-radius: 4px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
         }
-
         .thumbnail-item span {
             flex: 1;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
-        .save-icon {
-            margin-left: 10px;
-            color: #2173d1;
-            font-size: 1.5em;
-            cursor: pointer;
-            transition: transform 0.3s ease;
-        }
-
-        .save-icon:hover {
-            transform: scale(1.2);
-        }
-
-        .remove-btn {
+        .thumbnail-item button {
             background: transparent;
             border: none;
-            color: #d11a2a;
-            font-size: 1.5em;
             cursor: pointer;
-            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            font-size: 1.2rem;
+            transition: transform var(--transition-duration);
         }
-
-        .remove-btn:hover {
+        .thumbnail-item button:hover {
             transform: scale(1.2);
         }
-
-        /* Responsive Adjustments */
-        @media (min-width: 769px) {
-            .content-container {
-                flex-direction: row;
-                justify-content: center;
-                align-items: flex-start;
-            }
-            .container {
-                max-width: 48%;
-            }
+        .thumbnail-item .remove-btn {
+            order: -1; /* Move the remove button to the left */
         }
 
-        @media (max-width: 768px) {
-            .header img {
-                max-width: 100px;
-            }
-
-            h1 {
-                font-size: 1.8em;
-            }
-
-            h2 {
-                font-size: 1.5em;
-            }
-
-            .main-container {
-                width: 95vw;
-                padding: 1em;
-            }
+        /* Spinner Styling */
+        .spinner-container {
+            display: flex;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            justify-content: center;
+            align-items: center;
+        }
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border-left-color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
-        @media (max-width: 480px) {
-            .input-section, .convert-section {
-                gap: 0.5em;
-            }
-            .main-container {
-                width: 90vw;
-                padding: 1em;
-            }
-            h1 {
-                font-size: 1.5em;
-            }
-            h2 {
-                font-size: 1.2em;
-            }
-            button, input[type="file"], input[type="text"], select {
-                font-size: 0.9em;
-                padding: 0.6em;
-            }
-            .header img {
-                max-width: 80px;
-            }
-        }
-
+        /* Hide input content initially */
         .input-content {
             display: none;
-            width: 100%;
-        }
-
-        #download-all-button {
-            margin-top: 1em;
         }
 
         /* Additional Content Styling */
         .section-container {
-            background-color: #fff;
-            padding: 1.5em;
-            width: 100%;
+            background-color: var(--secondary-color);
+            padding: 2em;
+            margin: 2em auto;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
             max-width: 800px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            margin-top: 3em;
-            margin-left: auto;
-            margin-right: auto;
         }
-
         .section-container h2 {
-            color: #5539cc;
+            text-align: center;
             margin-bottom: 1em;
-            text-align: center;
+            color: var(--primary-color);
         }
-
-        /* General text alignment for sections */
-        .section-container p, .section-container li {
-            color: #333;
-            line-height: 1.6;
-            text-align: left; /* Default to left-aligned */
+        .section-container p,
+        .section-container ul,
+        .section-container ol {
+            text-align: left;
+            color: var(--text-color);
         }
-
-        /* FAQ styling: Center text with additional spacing */
-        .faq-container h3 {
-            text-align: center;
-            margin-top: 1em;
+        .section-container ul,
+        .section-container ol {
+            padding-left: 1.5em;
+            margin-bottom: 1em;
+        }
+        .section-container li {
             margin-bottom: 0.5em;
         }
-        .faq-container p {
-            text-align: center;
-            margin-bottom: 1.5em; /* Extra space between each Q&A */
-            line-height: 1.8;
+
+        /* Spacing between converted list and download button */
+        #download-all-button {
+            margin-top: 1em;
         }
 
-        /* Ensure lists are left-aligned and centered within the container */
-        .section-container ol, .section-container ul {
-            text-align: left; /* Keep lists left-aligned for readability */
-            max-width: 600px;
-            margin: 0 auto;
-            padding-left: 1.5em;
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            .content-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            .container {
+                max-width: 100%;
+            }
+        }
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+            }
+            .header img {
+                max-width: 120px;
+            }
+            .input-section button,
+            .convert-section button,
+            .file-label {
+                padding: 0.6em 1em;
+                font-size: 0.9rem;
+            }
         }
     </style>
     <py-config>
@@ -392,10 +335,10 @@
     </py-config>
 </head>
 <body>
-    <div class="header">
+    <header class="header">
         <img src="morpha.svg" alt="Morpha Logo - Free Online Image Format Converter">
-    </div>
-    <div class="main-container">
+    </header>
+    <main class="main-container">
         <h1>Free Online Image Format Converter</h1>
         <p>Morpha Image Format Converter allows you to convert images to various formats quickly and easily. With support for <strong>JPEG, PNG, WEBP, BMP, TIFF, ICO, PPM, and TGA</strong>, you can ensure compatibility across different platforms and uses.</p>
 
@@ -407,16 +350,14 @@
                 </div>
                 <div class="input-content">
                     <div class="input-section">
-                        <input type="file" id="input-file" accept="image/*" multiple />
-                        <button id="add-file-button">Add Files</button>
+                        <label for="input-file" class="file-label">Add Files</label>
+                        <input type="file" id="input-file" accept="image/*" multiple>
+                        <label for="directory-file" class="file-label">Add Directory</label>
+                        <input type="file" id="directory-file" accept="image/*" webkitdirectory>
                     </div>
                     <div class="input-section">
-                        <input type="file" id="directory-file" accept="image/*" webkitdirectory />
-                        <button id="add-directory-button">Add Directory</button>
-                    </div>
-                    <div class="input-section">
-                        <input type="text" id="input-url" placeholder="Enter image URL" />
-                        <button id="add-url-button">Add</button>
+                        <input type="text" id="input-url" placeholder="Enter image URL">
+                        <button id="add-url-button">Add URL</button>
                     </div>
                     <div class="thumbnail-list" id="thumbnail-list"></div>
                     <div class="convert-section">
@@ -440,15 +381,15 @@
                 <button id="download-all-button" style="display: none;">Download All</button>
             </div>
         </div>
-    </div>
+    </main>
 
     <!-- Additional SEO-Optimized Content Below the Tool -->
-    <div class="section-container">
+    <section class="section-container">
         <h2>Why Choose Morpha Image Format Converter?</h2>
         <p>Converting images has never been easier. Morpha.app offers a seamless free experience, allowing you to convert multiple images at once without any software installation or intrusive ads.</p>
-    </div>
+    </section>
 
-    <div class="section-container">
+    <section class="section-container">
         <h2>How to Convert Images Online</h2>
         <ol>
             <li><strong>Select Images:</strong> Click on "Add Files" or "Add Directory" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
@@ -456,9 +397,9 @@
             <li><strong>Convert Images:</strong> Click "Convert" to start the conversion process.</li>
             <li><strong>Download:</strong> After conversion, download your images individually or as a ZIP file.</li>
         </ol>
-    </div>
+    </section>
 
-    <div class="section-container">
+    <section class="section-container">
         <h2>Supported Image Formats</h2>
         <ul>
             <li><strong>JPEG:</strong> Widely used for digital photography and web images.</li>
@@ -470,9 +411,9 @@
             <li><strong>PPM:</strong> Simple format for pixel images.</li>
             <li><strong>TGA:</strong> Commonly used in animation and gaming.</li>
         </ul>
-    </div>
+    </section>
 
-    <div class="section-container faq-container">
+    <section class="section-container faq-container">
         <h2>Frequently Asked Questions</h2>
         <h3>Is the converter free to use?</h3>
         <p>Yes, our image format converter is completely free with no hidden costs and no ads.</p>
@@ -485,7 +426,7 @@
 
         <h3>Are my images secure?</h3>
         <p>Your privacy is our priority. We do not store your images after conversion.</p>
-    </div>
+    </section>
     <!-- End of Additional Content -->
 
     <py-script>
@@ -496,13 +437,22 @@
         from pyodide.http import pyfetch
         from pyodide.ffi import create_proxy
 
+        # Show the spinner and hide the input content initially
+        document.querySelector('.spinner-container').style.display = 'flex'
+        document.querySelector('.input-content').style.display = 'none'
+
         # Install Pillow
+        console.log("Loading Pillow...")
         await micropip.install("pillow")
+        console.log("Loaded Pillow.")
+
         from PIL import Image
 
-        # Initializing the lists
+        # After loading Pillow, hide the spinner and show the input content
         document.querySelector('.spinner-container').style.display = 'none'
         document.querySelector('.input-content').style.display = 'block'
+
+        # Initializing the lists
         thumbnail_list = document.getElementById("thumbnail-list")
         converted_list = document.getElementById("converted-list")
         items = []
@@ -544,33 +494,34 @@
             thumbnail_item = document.createElement("div")
             thumbnail_item.className = "thumbnail-item"
 
-            # Create Remove Button first
+            # Remove Button
             remove_btn = document.createElement("button")
-            remove_btn.textContent = "❌"
+            remove_btn.innerHTML = "&#10005;"  # Cross symbol
             remove_btn.className = "remove-btn"
             remove_btn.onclick = create_proxy(lambda e: remove_image(item_data, container, thumbnail_item))
 
-            # Create Image element
+            # Image Element
             img = document.createElement("img")
             img.src = src
-            img.alt = name  # Added alt attribute for SEO
+            img.alt = name
 
-            # Create Name span
+            # Name Span
             text = document.createElement("span")
             text.textContent = name
 
-            # Append Remove Button, Image, and Name
+            # Append Elements in order
             thumbnail_item.appendChild(remove_btn)
             thumbnail_item.appendChild(img)
             thumbnail_item.appendChild(text)
 
             if is_converted:
-                # Create Save Icon and append after text
+                # Save Icon
                 save_link = document.createElement("a")
                 save_link.href = src
                 save_link.download = name
-                save_link.className = "save-icon"
-                save_link.textContent = "💾"
+                save_link.innerHTML = "&#128190;"  # Floppy disk symbol
+                save_link.style.fontSize = "1.2rem"
+                save_link.style.marginLeft = "0.5em"
                 thumbnail_item.appendChild(save_link)
                 converted_items.append(item_data)
 
@@ -586,9 +537,17 @@
             container.removeChild(thumbnail_item)
 
         async def convert_images(event):
+            if not items:
+                console.log("No images to convert.")
+                return
+
             converted_list.innerHTML = ""
             converted_items.clear()
             selected_format = document.getElementById("format-select").value
+
+            # Show spinner during conversion
+            document.querySelector('.spinner-container').style.display = 'flex'
+            document.querySelector('.input-content').style.display = 'none'
 
             for item in items:
                 if item["type"] == "file":
@@ -616,13 +575,27 @@
                 # Create a new item_data for the converted item
                 converted_item_data = {"name": download_name, "data": output_io.getvalue()}
                 display_thumbnail(blob_url, download_name, converted_list, converted_item_data, is_converted=True)
+
+            # Hide spinner and show input content
+            document.querySelector('.spinner-container').style.display = 'none'
+            document.querySelector('.input-content').style.display = 'block'
+
             document.getElementById("download-all-button").style.display = 'block'
 
         def download_all(event):
             zip_io = io.BytesIO()
             with zipfile.ZipFile(zip_io, mode="w", compression=zipfile.ZIP_DEFLATED) as zip_file:
+                filename_counts = {}
                 for item in converted_items:
-                    zip_file.writestr(item['name'], item['data'])
+                    base_name = item['name']
+                    name, ext = base_name.rsplit('.', 1)
+                    count = filename_counts.get(base_name, 0)
+                    if count > 0:
+                        new_name = f"{name}({count}).{ext}"
+                    else:
+                        new_name = base_name
+                    filename_counts[base_name] = count + 1
+                    zip_file.writestr(new_name, item['data'])
             zip_blob = Blob.new([Uint8Array.from_(zip_io.getvalue())], {"type": "application/zip"})
             zip_url = URL.createObjectURL(zip_blob)
             download_link = document.createElement("a")
@@ -630,41 +603,20 @@
             download_link.download = "converted_images.zip"
             download_link.click()
 
-        # Event handlers to trigger input clicks
-        def trigger_input_file(event):
-            document.getElementById('input-file').click()
+        # Event handlers
+        document.getElementById("input-file").addEventListener("change", create_proxy(add_file))
+        document.getElementById("directory-file").addEventListener("change", create_proxy(add_directory))
+        document.getElementById("add-url-button").addEventListener("click", create_proxy(add_url))
 
-        def trigger_directory_file(event):
-            document.getElementById('directory-file').click()
-
-        # Proxy creation for events
-        trigger_input_file_proxy = create_proxy(trigger_input_file)
-        trigger_directory_file_proxy = create_proxy(trigger_directory_file)
-        add_file_proxy = create_proxy(add_file)
-        add_directory_proxy = create_proxy(add_directory)
-        add_url_proxy = create_proxy(add_url)
-        convert_images_proxy = create_proxy(convert_images)
-        download_all_proxy = create_proxy(download_all)
-
-        # Add keydown event listener for 'Enter' key on URL input
+        # Reusing existing code for pressing Enter
         async def input_url_keydown(event):
             if event.key == 'Enter':
                 await add_url(event)
 
-        input_url_keydown_proxy = create_proxy(input_url_keydown)
+        document.getElementById("input-url").addEventListener("keydown", create_proxy(input_url_keydown))
 
-        # Event listeners for buttons and inputs
-        document.getElementById("add-file-button").addEventListener("click", trigger_input_file_proxy)
-        document.getElementById("input-file").addEventListener("change", add_file_proxy)
-
-        document.getElementById("add-directory-button").addEventListener("click", trigger_directory_file_proxy)
-        document.getElementById("directory-file").addEventListener("change", add_directory_proxy)
-
-        document.getElementById("add-url-button").addEventListener("click", add_url_proxy)
-        document.getElementById("input-url").addEventListener("keydown", input_url_keydown_proxy)
-
-        document.getElementById("convert-button").addEventListener("click", convert_images_proxy)
-        document.getElementById("download-all-button").addEventListener("click", download_all_proxy)
+        document.getElementById("convert-button").addEventListener("click", create_proxy(convert_images))
+        document.getElementById("download-all-button").addEventListener("click", create_proxy(download_all))
     </py-script>
 </body>
 </html>
