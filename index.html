@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Head content remains the same -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Image Format Converter</title>
@@ -139,6 +140,10 @@
             border-radius: 6px;
             color: #333;
             min-width: 0; /* Allows elements to scale down */
+        }
+
+        input[type="file"] {
+            display: none; /* Hide the file inputs */
         }
 
         button {
@@ -285,17 +290,18 @@
                     <div class="spinner"></div>
                 </div>
                 <div class="input-content">
+                    <!-- Removed the visible file inputs -->
                     <div class="input-section">
                         <input type="file" id="input-file" accept="image/*" multiple />
-                        <button id="add-file-button">Add</button>
-                    </div>
-                    <div class="input-section">
-                        <input type="text" id="input-url" placeholder="Enter image URL" />
-                        <button id="add-url-button">Add</button>
+                        <button id="add-file-button">Add Files</button>
                     </div>
                     <div class="input-section">
                         <input type="file" id="directory-file" accept="image/*" webkitdirectory />
                         <button id="add-directory-button">Add Directory</button>
+                    </div>
+                    <div class="input-section">
+                        <input type="text" id="input-url" placeholder="Enter image URL" />
+                        <button id="add-url-button">Add</button>
                     </div>
                     <div class="thumbnail-list" id="thumbnail-list"></div>
                     <div class="convert-section">
@@ -339,14 +345,25 @@
         converted_items = []
 
         async def add_file(event):
-            files = document.getElementById("input-file").files
+            files = event.target.files
             for i in range(files.length):
                 file = files.item(i)
                 blob_url = URL.createObjectURL(file)
                 item_data = {"type": "file", "data": file, "src": blob_url, "name": file.name}
                 items.append(item_data)
                 display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
-            document.getElementById("input-file").value = ""
+            # No need to reset input value
+
+        async def add_directory(event):
+            files = event.target.files
+            for i in range(files.length):
+                file = files.item(i)
+                if file.type.startswith("image/"):
+                    blob_url = URL.createObjectURL(file)
+                    item_data = {"type": "file", "data": file, "src": blob_url, "name": file.name}
+                    items.append(item_data)
+                    display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
+            # No need to reset input value
 
         async def add_url(event):
             url = document.getElementById("input-url").value.strip()
@@ -361,28 +378,31 @@
                 except Exception as e:
                     console.log(f"Failed to fetch image from URL: {url}, error: {e}")
 
-        async def add_directory(event):
-            files = document.getElementById("directory-file").files
-            for i in range(files.length):
-                file = files.item(i)
-                if file.type.startswith("image/"):
-                    blob_url = URL.createObjectURL(file)
-                    item_data = {"type": "file", "data": file, "src": blob_url, "name": file.name}
-                    items.append(item_data)
-                    display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
-            document.getElementById("directory-file").value = ""
-
         def display_thumbnail(src, name, container, item_data, is_converted=False):
             thumbnail_item = document.createElement("div")
             thumbnail_item.className = "thumbnail-item"
 
+            # Create Remove Button first
+            remove_btn = document.createElement("button")
+            remove_btn.textContent = "❌"
+            remove_btn.className = "remove-btn"
+            remove_btn.onclick = create_proxy(lambda e: remove_image(item_data, container, thumbnail_item))
+
+            # Create Image element
             img = document.createElement("img")
             img.src = src
 
+            # Create Name span
             text = document.createElement("span")
             text.textContent = name
 
+            # Append Remove Button, Image, and Name
+            thumbnail_item.appendChild(remove_btn)
+            thumbnail_item.appendChild(img)
+            thumbnail_item.appendChild(text)
+
             if is_converted:
+                # Create Save Icon and append after text
                 save_link = document.createElement("a")
                 save_link.href = src
                 save_link.download = name
@@ -391,14 +411,6 @@
                 thumbnail_item.appendChild(save_link)
                 converted_items.append(item_data)
 
-            remove_btn = document.createElement("button")
-            remove_btn.textContent = "❌"
-            remove_btn.className = "remove-btn"
-            remove_btn.onclick = create_proxy(lambda e: remove_image(item_data, container, thumbnail_item))
-
-            thumbnail_item.appendChild(img)
-            thumbnail_item.appendChild(text)
-            thumbnail_item.appendChild(remove_btn)
             container.appendChild(thumbnail_item)
 
         def remove_image(item_data, container, thumbnail_item):
@@ -450,17 +462,30 @@
             download_link.download = "converted_images.zip"
             download_link.click()
 
+        # Event handlers to trigger input clicks
+        def trigger_input_file(event):
+            document.getElementById('input-file').click()
+
+        def trigger_directory_file(event):
+            document.getElementById('directory-file').click()
+
         # Proxy creation for events
+        trigger_input_file_proxy = create_proxy(trigger_input_file)
+        trigger_directory_file_proxy = create_proxy(trigger_directory_file)
         add_file_proxy = create_proxy(add_file)
-        add_url_proxy = create_proxy(add_url)
         add_directory_proxy = create_proxy(add_directory)
+        add_url_proxy = create_proxy(add_url)
         convert_images_proxy = create_proxy(convert_images)
         download_all_proxy = create_proxy(download_all)
 
-        # Event listeners for buttons
-        document.getElementById("add-file-button").addEventListener("click", add_file_proxy)
+        # Event listeners for buttons and inputs
+        document.getElementById("add-file-button").addEventListener("click", trigger_input_file_proxy)
+        document.getElementById("input-file").addEventListener("change", add_file_proxy)
+
+        document.getElementById("add-directory-button").addEventListener("click", trigger_directory_file_proxy)
+        document.getElementById("directory-file").addEventListener("change", add_directory_proxy)
+
         document.getElementById("add-url-button").addEventListener("click", add_url_proxy)
-        document.getElementById("add-directory-button").addEventListener("click", add_directory_proxy)
         document.getElementById("convert-button").addEventListener("click", convert_images_proxy)
         document.getElementById("download-all-button").addEventListener("click", download_all_proxy)
     </py-script>
