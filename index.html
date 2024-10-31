@@ -102,6 +102,39 @@
             opacity: 0.5;
             cursor: not-allowed;
         }
+
+        /* Remove All Button Styling */
+        .remove-all-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #e53e3e; /* Red-600 */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem; /* Rounded-md */
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.875rem;
+        }
+
+        .remove-all-button:hover {
+            background-color: #c53030; /* Red-700 */
+        }
+
+        .remove-all-button.hidden {
+            display: none;
+        }
+
+        .remove-all-button svg {
+            width: 1em;
+            height: 1em;
+        }
+
+        /* Spinner Styling */
+        .spinner-container {
+            /* Ensures the spinner is above other elements */
+            z-index: 50;
+        }
     </style>
 
     <!-- PyScript Configuration -->
@@ -177,7 +210,10 @@
                         <div class="mt-4 max-h-48 overflow-y-auto" id="thumbnail-list"></div>
                         <!-- Convert Section -->
                         <div class="flex flex-col sm:flex-row gap-2 mt-4 items-center">
-                            <button id="convert-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition w-full sm:w-auto">Convert All</button>
+                            <button id="remove-all-input-button" class="remove-all-button hidden">
+                                &#10005; Remove All
+                            </button>
+                            <button id="convert-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition w-full sm:w-auto hidden">Convert All</button>
                         </div>
                     </div>
                 </div>
@@ -191,10 +227,15 @@
                 </div>
             </div>
             <!-- Image Output Container -->
-            <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-md custom-shadow rounded-xl">
+            <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-md custom-shadow rounded-xl relative">
                 <h2 class="text-2xl font-semibold mb-4">Image Output</h2>
                 <div id="converted-list" class="max-h-64 overflow-y-auto"></div>
-                <button id="download-all-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded mt-4 hidden transition w-full sm:w-auto">Download All</button>
+                <div class="flex flex-col sm:flex-row gap-2 mt-4 items-center">
+                    <button id="remove-all-output-button" class="remove-all-button hidden">
+                        &#10005; Remove All
+                    </button>
+                    <button id="download-all-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded mt-2 sm:mt-0 hidden transition w-full sm:w-auto">Download All</button>
+                </div>
             </div>
         </div>
     </main>
@@ -329,6 +370,22 @@ async def main():
     # Initialize format selector visibility
     toggle_format_select()
 
+    def update_convert_button_visibility():
+        if items:
+            document.getElementById("convert-button").classList.remove('hidden')
+            document.getElementById("remove-all-input-button").classList.remove('hidden')
+        else:
+            document.getElementById("convert-button").classList.add('hidden')
+            document.getElementById("remove-all-input-button").classList.add('hidden')
+
+    def update_download_button_visibility():
+        if converted_items:
+            document.getElementById("download-all-button").classList.remove('hidden')
+            document.getElementById("remove-all-output-button").classList.remove('hidden')
+        else:
+            document.getElementById("download-all-button").classList.add('hidden')
+            document.getElementById("remove-all-output-button").classList.add('hidden')
+
     async def add_file(event):
         files = event.target.files
         for i in range(files.length):
@@ -343,6 +400,8 @@ async def main():
             }
             items.append(item_data)
             display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
+        update_convert_button_visibility()
+        toggle_format_select()
 
     async def add_directory(event):
         files = event.target.files
@@ -359,6 +418,8 @@ async def main():
                 }
                 items.append(item_data)
                 display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
+        update_convert_button_visibility()
+        toggle_format_select()
 
     async def add_url(event):
         url_input = document.getElementById("input-url")
@@ -377,6 +438,8 @@ async def main():
                 items.append(item_data)
                 display_thumbnail(url, item_data["name"], thumbnail_list, item_data)
                 url_input.value = ""
+                update_convert_button_visibility()
+                toggle_format_select()
             except Exception as e:
                 console.log(f"Failed to fetch image from URL: {url}, error: {e}")
 
@@ -389,7 +452,7 @@ async def main():
         remove_btn.innerHTML = "&#10005;"  # Cross symbol
         remove_btn.className = "text-red-500 hover:text-red-700 text-xl focus:outline-none"
         remove_btn.onclick = create_proxy(lambda e: remove_image(item_data, container, thumbnail_item))
-
+        
         # Image Element
         img = document.createElement("img")
         img.src = src
@@ -488,12 +551,14 @@ async def main():
         if container.id == "thumbnail-list":
             if item_data in items:
                 items.remove(item_data)
+            container.removeChild(thumbnail_item)
+            update_convert_button_visibility()
+            toggle_format_select()
         elif container.id == "converted-list":
             if item_data in converted_items:
                 converted_items.remove(item_data)
-        container.removeChild(thumbnail_item)
-        # Re-toggle format selectors visibility after removal
-        toggle_format_select()
+            container.removeChild(thumbnail_item)
+            update_download_button_visibility()
 
     async def convert_images(event):
         if not items:
@@ -547,9 +612,13 @@ async def main():
         # Hide spinner after conversion
         spinner.classList.add('hidden')
 
-        document.getElementById("download-all-button").classList.remove('hidden')
+        update_download_button_visibility()
 
     def download_all(event):
+        if not converted_items:
+            console.log("No converted images to download.")
+            return
+
         zip_io = io.BytesIO()
         with zipfile.ZipFile(zip_io, mode="w", compression=zipfile.ZIP_DEFLATED) as zip_file:
             filename_counts = {}
@@ -579,12 +648,27 @@ async def main():
         download_link.download = "converted_images.zip"
         download_link.click()
 
+    def remove_all_inputs(event):
+        # Clear all items from input
+        items.clear()
+        thumbnail_list.innerHTML = ""
+        update_convert_button_visibility()
+        toggle_format_select()
+
+    def remove_all_outputs(event):
+        # Clear all items from output
+        converted_items.clear()
+        converted_list.innerHTML = ""
+        update_download_button_visibility()
+
     # Event handlers
     document.getElementById("input-file").addEventListener("change", create_proxy(add_file))
     document.getElementById("directory-file").addEventListener("change", create_proxy(add_directory))
     document.getElementById("add-url-button").addEventListener("click", create_proxy(add_url))
     document.getElementById("convert-button").addEventListener("click", create_proxy(convert_images))
     document.getElementById("download-all-button").addEventListener("click", create_proxy(download_all))
+    document.getElementById("remove-all-input-button").addEventListener("click", create_proxy(remove_all_inputs))
+    document.getElementById("remove-all-output-button").addEventListener("click", create_proxy(remove_all_outputs))
 
     # Handle Enter key press in URL input
     async def input_url_keydown(event):
@@ -595,6 +679,6 @@ async def main():
 
 # Schedule the 'main' coroutine
 asyncio.ensure_future(main())
-</py-script>
+    </py-script>
 </body>
 </html>
