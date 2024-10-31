@@ -47,20 +47,8 @@
       }
     </script>
 
-    <!-- Custom Styles (for Spinner, Toggle Switch, and Custom Shadow) -->
+    <!-- Custom Styles (for Toggle Switch and Custom Shadow) -->
     <style>
-        /* Spinner Animation */
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        .spinner {
-            border: 4px solid rgba(0, 0, 0, 0.1);
-            border-left-color: #5539cc;
-            border-radius: 50%;
-            width: 40px;
-            height: 40px;
-            animation: spin 1s linear infinite;
-        }
         /* Dark Mode Toggle Switch */
         .toggle-switch {
             position: relative;
@@ -98,9 +86,21 @@
         input:checked + .switch-label::before {
             transform: translateX(26px);
         }
+
         /* Custom Soft Shadow */
         .custom-shadow {
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Prevent horizontal overflow */
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Disabled Select Styling */
+        select:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
     </style>
 
@@ -131,56 +131,70 @@
         </p>
 
         <!-- Gap between description and containers -->
-        <div class="mt-6"></div>
+        <div class="mt-6 w-full px-4 sm:px-0"></div>
 
         <div class="flex flex-wrap justify-center gap-8 w-full max-w-6xl">
             <!-- Image Input Container -->
             <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-md relative custom-shadow rounded-xl">
                 <h2 class="text-2xl font-semibold mb-4">Image Input</h2>
-                <!-- Spinner (initially visible) -->
-                <div class="spinner-container flex justify-center items-center">
-                    <div class="spinner"></div>
-                </div>
-                <!-- Input Content (initially hidden) -->
-                <div class="input-content hidden">
+                <!-- Input Content -->
+                <div class="input-content">
                     <div class="flex flex-col gap-4">
                         <!-- File and Directory Input -->
-                        <div class="flex gap-2">
-                            <label for="input-file" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded cursor-pointer transition">Select Images</label>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <label for="input-file" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded cursor-pointer transition text-center sm:text-left">Upload Images</label>
                             <input type="file" id="input-file" accept="image/*" multiple class="hidden">
                             
-                            <label for="directory-file" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded cursor-pointer transition">Add Directory</label>
+                            <label for="directory-file" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded cursor-pointer transition text-center sm:text-left">Upload Folder</label>
                             <input type="file" id="directory-file" accept="image/*" webkitdirectory class="hidden">
                         </div>
                         <!-- URL Input -->
-                        <div class="flex gap-2">
+                        <div class="flex flex-col sm:flex-row gap-2">
                             <input type="text" id="input-url" placeholder="Enter image URL" class="flex-1 px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-                            <button id="add-url-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition">Add URL</button>
+                            <button id="add-url-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition w-full sm:w-auto">Add URL</button>
+                        </div>
+                        <!-- Apply to All Checkbox and Global Format Selector -->
+                        <div class="flex flex-col sm:flex-row items-center gap-2 mt-2">
+                            <div class="flex items-center">
+                                <input type="checkbox" id="apply-to-all-checkbox" class="mr-2" checked>
+                                <label for="apply-to-all-checkbox" class="select-none">Use same format for all images</label>
+                            </div>
+                            <div class="flex-1">
+                                <label for="format-select" class="sr-only">Select Global Format</label>
+                                <select id="format-select" class="w-full px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                                    <option value="JPEG">JPEG</option>
+                                    <option value="PNG">PNG</option>
+                                    <option value="WEBP">WEBP</option>
+                                    <option value="BMP">BMP</option>
+                                    <option value="TIFF">TIFF</option>
+                                    <option value="ICO">ICO</option>
+                                    <option value="PPM">PPM</option>
+                                    <option value="TGA">TGA</option>
+                                </select>
+                            </div>
                         </div>
                         <!-- Thumbnail List -->
                         <div class="mt-4 max-h-48 overflow-y-auto" id="thumbnail-list"></div>
                         <!-- Convert Section -->
-                        <div class="flex gap-2 mt-4">
-                            <select id="format-select" class="flex-1 px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-                                <option value="JPEG">JPEG</option>
-                                <option value="PNG">PNG</option>
-                                <option value="WEBP">WEBP</option>
-                                <option value="BMP">BMP</option>
-                                <option value="TIFF">TIFF</option>
-                                <option value="ICO">ICO</option>
-                                <option value="PPM">PPM</option>
-                                <option value="TGA">TGA</option>
-                            </select>
-                            <button id="convert-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition">Convert Images</button>
+                        <div class="flex flex-col sm:flex-row gap-2 mt-4 items-center">
+                            <button id="convert-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition w-full sm:w-auto">Convert All</button>
                         </div>
                     </div>
+                </div>
+                <!-- Spinner overlay (Visible initially) -->
+                <div role="status" class="spinner-container absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-75">
+                    <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
+                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
+                    </svg>
+                    <span class="sr-only">Loading...</span>
                 </div>
             </div>
             <!-- Image Output Container -->
             <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-md custom-shadow rounded-xl">
                 <h2 class="text-2xl font-semibold mb-4">Image Output</h2>
                 <div id="converted-list" class="max-h-64 overflow-y-auto"></div>
-                <button id="download-all-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded mt-4 hidden transition">Download All</button>
+                <button id="download-all-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded mt-4 hidden transition w-full sm:w-auto">Download All</button>
             </div>
         </div>
     </main>
@@ -189,9 +203,9 @@
     <section class="bg-white dark:bg-gray-800 p-6 max-w-3xl mx-auto mt-8 custom-shadow rounded-xl mb-8">
         <h2 class="text-2xl font-semibold mb-4 text-center">How to Convert Images</h2>
         <ol class="list-decimal list-inside text-left space-y-2">
-            <li><strong class="text-purple-600">Select Images:</strong> Click on "Select Images" or "Add Directory" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
-            <li><strong class="text-purple-600">Choose Format:</strong> Select your desired output format from the dropdown menu.</li>
-            <li><strong class="text-purple-600">Convert Images:</strong> Click "Convert Images" to start the conversion process.</li>
+            <li><strong class="text-purple-600">Select Images:</strong> Click on "Upload Images" or "Upload Folder" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
+            <li><strong class="text-purple-600">Choose Format:</strong> By default, the selected format will apply to all images. Uncheck "Use same format for all images" to set individual formats.</li>
+            <li><strong class="text-purple-600">Convert Images:</strong> Click "Convert All" to start the conversion process.</li>
             <li><strong class="text-purple-600">Download:</strong> After conversion, download your images individually or as a ZIP file.</li>
         </ol>
     </section>
@@ -253,199 +267,334 @@
 
     <!-- PyScript Code -->
     <py-script>
-    import asyncio
+import asyncio
 
-    async def main():
-        import io
-        import zipfile
-        from js import document, Blob, URL, Uint8Array, console
-        import micropip
-        from pyodide.http import pyfetch
-        from pyodide.ffi import create_proxy
+async def main():
+    import io
+    import zipfile
+    from js import document, Blob, URL, Uint8Array, console
+    import micropip
+    from pyodide.http import pyfetch
+    from pyodide.ffi import create_proxy
 
-        # Show the spinner and hide the input content initially
-        document.querySelector('.spinner-container').classList.remove('hidden')
-        document.querySelector('.input-content').classList.add('hidden')
+    # Spinner is initially visible; it will be hidden after Pillow loads
+    spinner = document.querySelector('.spinner-container')
 
-        # Install Pillow
-        console.log("Loading Pillow...")
-        await micropip.install("pillow")
-        console.log("Loaded Pillow.")
+    # Install Pillow
+    console.log("Loading Pillow...")
+    await micropip.install("pillow")
+    console.log("Loaded Pillow.")
 
-        from PIL import Image
+    from PIL import Image
 
-        # After loading Pillow, hide the spinner and show the input content
-        document.querySelector('.spinner-container').classList.add('hidden')
-        document.querySelector('.input-content').classList.remove('hidden')
+    # After loading Pillow, hide the spinner overlay
+    spinner.classList.add('hidden')
 
-        # Initializing the lists
-        thumbnail_list = document.getElementById("thumbnail-list")
-        converted_list = document.getElementById("converted-list")
-        items = []
-        converted_items = []
+    # Initializing the lists
+    thumbnail_list = document.getElementById("thumbnail-list")
+    converted_list = document.getElementById("converted-list")
+    items = []
+    converted_items = []
 
-        async def add_file(event):
-            files = event.target.files
-            for i in range(files.length):
-                file = files.item(i)
+    # Supported formats
+    formats = ["JPEG", "PNG", "WEBP", "BMP", "TIFF", "ICO", "PPM", "TGA"]
+
+    def toggle_format_select(event=None):
+        apply_to_all = document.getElementById("apply-to-all-checkbox").checked
+        global_format_select = document.getElementById("format-select")
+        if apply_to_all:
+            # Enable global format selector
+            global_format_select.disabled = False
+            # Show global format selector
+            global_format_select.style.opacity = "1"
+            global_format_select.style.cursor = "pointer"
+            # Hide individual format selectors
+            for item in items:
+                if 'format_select' in item:
+                    item['format_select'].style.display = 'none'
+        else:
+            # Disable global format selector
+            global_format_select.disabled = True
+            # Gray out the global format selector
+            global_format_select.style.opacity = "0.5"
+            global_format_select.style.cursor = "not-allowed"
+            # Show individual format selectors
+            for item in items:
+                if 'format_select' in item:
+                    item['format_select'].style.display = 'block'
+
+    # Attach event listener to the checkbox
+    document.getElementById("apply-to-all-checkbox").addEventListener("change", create_proxy(toggle_format_select))
+
+    # Initialize format selector visibility
+    toggle_format_select()
+
+    async def add_file(event):
+        files = event.target.files
+        for i in range(files.length):
+            file = files.item(i)
+            blob_url = URL.createObjectURL(file)
+            item_data = {
+                "type": "file",
+                "data": file,
+                "src": blob_url,
+                "name": file.name,
+                "format": None
+            }
+            items.append(item_data)
+            display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
+
+    async def add_directory(event):
+        files = event.target.files
+        for i in range(files.length):
+            file = files.item(i)
+            if file.type.startswith("image/"):
                 blob_url = URL.createObjectURL(file)
-                item_data = {"type": "file", "data": file, "src": blob_url, "name": file.name}
+                item_data = {
+                    "type": "file",
+                    "data": file,
+                    "src": blob_url,
+                    "name": file.name,
+                    "format": None
+                }
                 items.append(item_data)
                 display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
 
-        async def add_directory(event):
-            files = event.target.files
-            for i in range(files.length):
-                file = files.item(i)
-                if file.type.startswith("image/"):
-                    blob_url = URL.createObjectURL(file)
-                    item_data = {"type": "file", "data": file, "src": blob_url, "name": file.name}
-                    items.append(item_data)
-                    display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
+    async def add_url(event):
+        url_input = document.getElementById("input-url")
+        url = url_input.value.strip()
+        if url:
+            try:
+                response = await pyfetch(url)
+                byte_data = await response.bytes()
+                item_data = {
+                    "type": "url",
+                    "data": byte_data,
+                    "src": url,
+                    "name": url.split("/")[-1] or "image",
+                    "format": None
+                }
+                items.append(item_data)
+                display_thumbnail(url, item_data["name"], thumbnail_list, item_data)
+                url_input.value = ""
+            except Exception as e:
+                console.log(f"Failed to fetch image from URL: {url}, error: {e}")
 
-        async def add_url(event):
-            url = document.getElementById("input-url").value.strip()
-            if url:
-                try:
-                    response = await pyfetch(url)
-                    byte_data = await response.bytes()
-                    item_data = {"type": "url", "data": byte_data, "src": url, "name": url.split("/")[-1]}
-                    items.append(item_data)
-                    display_thumbnail(url, url.split("/")[-1], thumbnail_list, item_data)
-                    document.getElementById("input-url").value = ""
-                except Exception as e:
-                    console.log(f"Failed to fetch image from URL: {url}, error: {e}")
+    def display_thumbnail(src, name, container, item_data, is_converted=False):
+        thumbnail_item = document.createElement("div")
+        thumbnail_item.className = "flex items-center gap-2 mb-2"
 
-        def display_thumbnail(src, name, container, item_data, is_converted=False):
-            thumbnail_item = document.createElement("div")
-            thumbnail_item.className = "flex items-center gap-2 mb-2"
+        # Remove Button
+        remove_btn = document.createElement("button")
+        remove_btn.innerHTML = "&#10005;"  # Cross symbol
+        remove_btn.className = "text-red-500 hover:text-red-700 text-xl focus:outline-none"
+        remove_btn.onclick = create_proxy(lambda e: remove_image(item_data, container, thumbnail_item))
 
-            # Remove Button
-            remove_btn = document.createElement("button")
-            remove_btn.innerHTML = "&#10005;"  # Cross symbol
-            remove_btn.className = "text-red-500 hover:text-red-700 text-xl focus:outline-none"
-            remove_btn.onclick = create_proxy(lambda e: remove_image(item_data, container, thumbnail_item))
+        # Image Element
+        img = document.createElement("img")
+        img.src = src
+        img.alt = name
+        img.className = "w-12 h-12 object-cover rounded border"
 
-            # Image Element
-            img = document.createElement("img")
-            img.src = src
-            img.alt = name
-            img.className = "w-12 h-12 object-cover rounded border"
+        if is_converted:
+            # Split the name into basename and extension
+            if '.' in name:
+                basename, extension = name.rsplit('.', 1)
+                extension = '.' + extension
+            else:
+                basename = name
+                extension = ''
 
+            # Input for basename
+            name_input = document.createElement("input")
+            name_input.type = "text"
+            name_input.value = basename
+            name_input.className = "flex-1 px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            item_data['basename'] = basename  # Store reference for later use
+
+            # Span for extension
+            extension_span = document.createElement("span")
+            extension_span.textContent = extension
+            extension_span.className = "extension-span text-gray-500 ml-2"
+
+            # Container for input and extension
+            name_container = document.createElement("div")
+            name_container.className = "flex items-center flex-1"
+            name_container.appendChild(name_input)
+            name_container.appendChild(extension_span)
+
+            # Save Icon
+            save_link = document.createElement("a")
+            save_link.href = src
+            save_link.download = name
+            save_link.innerHTML = "&#128190;"  # Floppy disk symbol
+            save_link.className = "text-green-500 hover:text-green-700 text-xl ml-2"
+            item_data['save_link'] = save_link  # Store reference for later use
+
+            # Append Elements in order
+            thumbnail_item.appendChild(remove_btn)
+            thumbnail_item.appendChild(img)
+            thumbnail_item.appendChild(name_container)
+            thumbnail_item.appendChild(save_link)
+            container.appendChild(thumbnail_item)
+            converted_items.append(item_data)
+
+            # Update download name when input changes
+            def update_name(event):
+                new_basename = name_input.value.strip()
+                if not new_basename:
+                    new_basename = "untitled"
+                    name_input.value = new_basename
+                item_data['basename'] = new_basename
+                new_download_name = f"{new_basename}{extension}"
+                save_link.download = new_download_name
+                item_data['name'] = new_download_name  # Update the name in item_data
+
+            name_input.addEventListener("change", create_proxy(update_name))
+            name_input.addEventListener("blur", create_proxy(update_name))
+            name_input.addEventListener("keyup", create_proxy(lambda e: e.key == 'Enter' and update_name(e)))
+        else:
             # Name Span
             text = document.createElement("span")
             text.textContent = name
             text.className = "flex-1 truncate"
 
+            # Format Selector (visible when "Use same format for all images" is unchecked)
+            format_select = document.createElement("select")
+            format_select.className = "px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
+            for fmt in formats:
+                option = document.createElement("option")
+                option.value = fmt
+                option.textContent = fmt
+                format_select.appendChild(option)
+            format_select.value = document.getElementById("format-select").value  # Default to global format
+            item_data['format_select'] = format_select  # Store for later use
+
+            # Initialize visibility based on checkbox
+            apply_to_all = document.getElementById("apply-to-all-checkbox").checked
+            if apply_to_all:
+                format_select.style.display = "none"
+            else:
+                format_select.style.display = "block"
+
             # Append Elements in order
             thumbnail_item.appendChild(remove_btn)
             thumbnail_item.appendChild(img)
             thumbnail_item.appendChild(text)
-
-            if is_converted:
-                # Save Icon
-                save_link = document.createElement("a")
-                save_link.href = src
-                save_link.download = name
-                save_link.innerHTML = "&#128190;"  # Floppy disk symbol
-                save_link.className = "text-green-500 hover:text-green-700 text-xl ml-2"
-                thumbnail_item.appendChild(save_link)
-                converted_items.append(item_data)
-
+            thumbnail_item.appendChild(format_select)
             container.appendChild(thumbnail_item)
 
-        def remove_image(item_data, container, thumbnail_item):
-            if container.id == "thumbnail-list":
-                if item_data in items:
-                    items.remove(item_data)
-            elif container.id == "converted-list":
-                if item_data in converted_items:
-                    converted_items.remove(item_data)
-            container.removeChild(thumbnail_item)
+    def remove_image(item_data, container, thumbnail_item):
+        if container.id == "thumbnail-list":
+            if item_data in items:
+                items.remove(item_data)
+        elif container.id == "converted-list":
+            if item_data in converted_items:
+                converted_items.remove(item_data)
+        container.removeChild(thumbnail_item)
+        # Re-toggle format selectors visibility after removal
+        toggle_format_select()
 
-        async def convert_images(event):
-            if not items:
-                console.log("No images to convert.")
-                return
+    async def convert_images(event):
+        if not items:
+            console.log("No images to convert.")
+            return
 
-            converted_list.innerHTML = ""
-            converted_items.clear()
-            selected_format = document.getElementById("format-select").value
+        converted_list.innerHTML = ""
+        converted_items.clear()
 
-            # Show spinner during conversion
-            document.querySelector('.spinner-container').classList.remove('hidden')
-            document.querySelector('.input-content').classList.add('hidden')
+        apply_to_all = document.getElementById("apply-to-all-checkbox").checked
+        global_format = document.getElementById("format-select").value
 
-            for item in items:
-                if item["type"] == "file":
-                    array_buffer = await item["data"].arrayBuffer()
-                    byte_data = bytes(array_buffer.to_py())
-                else:
-                    byte_data = item["data"]
+        # Show spinner during conversion
+        spinner = document.querySelector('.spinner-container')
+        spinner.classList.remove('hidden')
 
-                img = Image.open(io.BytesIO(byte_data))
-                if img.mode == "P":
-                    img = img.convert("RGBA")
+        for item in items:
+            if item["type"] == "file":
+                array_buffer = await item["data"].arrayBuffer()
+                byte_data = bytes(array_buffer.to_py())
+            else:
+                byte_data = item["data"]
 
-                output_io = io.BytesIO()
-                if selected_format == "JPEG":
-                    img = img.convert("RGB")
-                img.save(output_io, format=selected_format)
-                output_io.seek(0)
+            img = Image.open(io.BytesIO(byte_data))
+            if img.mode == "P":
+                img = img.convert("RGBA")
 
-                original_name = item["name"].rsplit(".", 1)[0]
-                download_name = f"{original_name}.{selected_format.lower()}"
+            output_io = io.BytesIO()
 
-                converted_blob = Blob.new([Uint8Array.from_(output_io.read())], {"type": f"image/{selected_format.lower()}"})
-                blob_url = URL.createObjectURL(converted_blob)
+            # Determine format
+            if apply_to_all:
+                selected_format = global_format
+            else:
+                selected_format = item['format_select'].value
 
-                # Create a new item_data for the converted item
-                converted_item_data = {"name": download_name, "data": output_io.getvalue()}
-                display_thumbnail(blob_url, download_name, converted_list, converted_item_data, is_converted=True)
+            if selected_format == "JPEG":
+                img = img.convert("RGB")
+            img.save(output_io, format=selected_format)
+            output_io.seek(0)
 
-            # Hide spinner and show input content
-            document.querySelector('.spinner-container').classList.add('hidden')
-            document.querySelector('.input-content').classList.remove('hidden')
+            original_name = item["name"].rsplit(".", 1)[0]
+            download_name = f"{original_name}.{selected_format.lower()}"
 
-            document.getElementById("download-all-button").classList.remove('hidden')
+            converted_blob = Blob.new([Uint8Array.from_(output_io.read())], {"type": f"image/{selected_format.lower()}"})
+            blob_url = URL.createObjectURL(converted_blob)
 
-        def download_all(event):
-            zip_io = io.BytesIO()
-            with zipfile.ZipFile(zip_io, mode="w", compression=zipfile.ZIP_DEFLATED) as zip_file:
-                filename_counts = {}
-                for item in converted_items:
-                    base_name = item['name']
+            # Create a new item_data for the converted item
+            converted_item_data = {"name": download_name, "data": output_io.getvalue()}
+            display_thumbnail(blob_url, download_name, converted_list, converted_item_data, is_converted=True)
+
+        # Hide spinner after conversion
+        spinner.classList.add('hidden')
+
+        document.getElementById("download-all-button").classList.remove('hidden')
+
+    def download_all(event):
+        zip_io = io.BytesIO()
+        with zipfile.ZipFile(zip_io, mode="w", compression=zipfile.ZIP_DEFLATED) as zip_file:
+            filename_counts = {}
+            for item in converted_items:
+                # Use the updated name from the input field
+                base_name = item.get('name', 'untitled')
+                if '.' in base_name:
                     name, ext = base_name.rsplit('.', 1)
-                    count = filename_counts.get(base_name, 0)
-                    if count > 0:
-                        new_name = f"{name}({count}).{ext}"
-                    else:
-                        new_name = base_name
-                    filename_counts[base_name] = count + 1
-                    zip_file.writestr(new_name, item['data'])
-            zip_blob = Blob.new([Uint8Array.from_(zip_io.getvalue())], {"type": "application/zip"})
-            zip_url = URL.createObjectURL(zip_blob)
-            download_link = document.createElement("a")
-            download_link.href = zip_url
-            download_link.download = "converted_images.zip"
-            download_link.click()
+                    ext = '.' + ext
+                else:
+                    name = base_name
+                    ext = ''
 
-        # Event handlers
-        document.getElementById("input-file").addEventListener("change", create_proxy(add_file))
-        document.getElementById("directory-file").addEventListener("change", create_proxy(add_directory))
-        document.getElementById("add-url-button").addEventListener("click", create_proxy(add_url))
-        document.getElementById("convert-button").addEventListener("click", create_proxy(convert_images))
-        document.getElementById("download-all-button").addEventListener("click", create_proxy(download_all))
+                # Handle duplicate filenames
+                count = filename_counts.get(base_name, 0)
+                if count > 0:
+                    new_name = f"{name}({count}){ext}"
+                else:
+                    new_name = base_name
+                filename_counts[base_name] = count + 1
 
-        # Handle Enter key press in URL input
-        async def input_url_keydown(event):
-            if event.key == 'Enter':
-                await add_url(event)
+                zip_file.writestr(new_name, item['data'])
+        zip_blob = Blob.new([Uint8Array.from_(zip_io.getvalue())], {"type": "application/zip"})
+        zip_url = URL.createObjectURL(zip_blob)
+        download_link = document.createElement("a")
+        download_link.href = zip_url
+        download_link.download = "converted_images.zip"
+        download_link.click()
 
-        document.getElementById("input-url").addEventListener("keydown", create_proxy(input_url_keydown))
+    # Event handlers
+    document.getElementById("input-file").addEventListener("change", create_proxy(add_file))
+    document.getElementById("directory-file").addEventListener("change", create_proxy(add_directory))
+    document.getElementById("add-url-button").addEventListener("click", create_proxy(add_url))
+    document.getElementById("convert-button").addEventListener("click", create_proxy(convert_images))
+    document.getElementById("download-all-button").addEventListener("click", create_proxy(download_all))
 
-    # Schedule the 'main' coroutine
-    asyncio.ensure_future(main())
-    </py-script>
+    # Handle Enter key press in URL input
+    async def input_url_keydown(event):
+        if event.key == 'Enter':
+            await add_url(event)
+
+    document.getElementById("input-url").addEventListener("keydown", create_proxy(input_url_keydown))
+
+# Schedule the 'main' coroutine
+asyncio.ensure_future(main())
+</py-script>
 </body>
 </html>
