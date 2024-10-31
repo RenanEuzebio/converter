@@ -51,7 +51,7 @@
       }
     </script>
 
-    <!-- Custom Styles (Reusable Classes) -->
+    <!-- Custom Styles (for Toggle Switch and Custom Shadow) -->
     <style>
         /* General Button Styling */
         .button {
@@ -133,6 +133,7 @@
     <py-config>
         packages = ["micropip"]
         splashscreen = false
+        editor = false  <!-- Disable the PyScript editor -->
     </py-config>
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -161,12 +162,12 @@
                     <div class="flex flex-col gap-4">
                         <div class="flex flex-col sm:flex-row gap-2">
                             <label for="input-file" class="button button-purple">
-                                <img src="up-img.svg" alt="Upload Images" class="w-5 h-5">Upload Images
+                                <img src="up-img.svg" alt="Add Images" class="w-5 h-5">Add Images
                             </label>
                             <input type="file" id="input-file" accept="image/*" multiple class="hidden">
                             
                             <label for="directory-file" class="button button-purple">
-                                <img src="up-folder.svg" alt="Upload Folder" class="w-5 h-5">Upload Folder
+                                <img src="up-folder.svg" alt="Add Folder" class="w-5 h-5">Add Folder
                             </label>
                             <input type="file" id="directory-file" accept="image/*" webkitdirectory class="hidden">
                         </div>
@@ -241,7 +242,7 @@
     <section class="bg-white dark:bg-gray-800 p-6 max-w-3xl mx-auto mt-8 custom-shadow rounded-xl mb-8">
         <h2 class="text-2xl font-semibold mb-4 text-center">How to Convert Images</h2>
         <ol class="list-decimal list-inside text-left space-y-2">
-            <li><strong class="text-purple-600">Select Images:</strong> Click on "Upload Images" or "Upload Folder" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
+            <li><strong class="text-purple-600">Select Images:</strong> Click on "Add Images" or "Add Folder" to add images from your device. Alternatively, enter an image URL to add images from the web.</li>
             <li><strong class="text-purple-600">Choose Format:</strong> By default, the selected format will apply to all images. Uncheck "Use same format for all images" to set individual formats.</li>
             <li><strong class="text-purple-600">Convert Images:</strong> Click "Convert All" to start the conversion process or use individual "Convert" buttons next to each image.</li>
             <li><strong class="text-purple-600">Download:</strong> After conversion, download your images individually or as a ZIP file.</li>
@@ -266,7 +267,7 @@
             </div>
             <div>
                 <h3 class="text-xl font-semibold text-purple-600">Are my images secure?</h3>
-                <p>Your privacy is our priority. We do not store your images after conversion.</p>
+                <p>Your images are not being uploaded to any remote server. All processing is done locally in your browser.</p>
             </div>
         </div>
     </section>
@@ -303,7 +304,7 @@
         });
     </script>
 
-    <!-- PyScript Code (Unchanged) -->
+    <!-- PyScript Code -->
     <script type="py">
 import asyncio
 
@@ -467,16 +468,16 @@ async def main():
             save_link = document.createElement("a")
             save_link.href = src
             save_link.download = unique_download_name
-            save_link.innerHTML = '<img src="download.svg" alt="Download" class="w-5 h-5">'
-            save_link.className = "text-green-500 hover:text-green-700 text-xl ml-2"
-            item_data['save_link'] = save_link
+            save_link.innerHTML = '<img src="download.svg" alt="Download" class="w-5 h-5">';
+            save_link.className = "text-green-500 hover:text-green-700 text-xl ml-2";
+            item_data['save_link'] = save_link;
 
-            thumbnail_item.appendChild(remove_btn)
-            thumbnail_item.appendChild(img)
-            thumbnail_item.appendChild(name_container)
-            thumbnail_item.appendChild(save_link)
-            container.appendChild(thumbnail_item)
-            converted_items.append(item_data)
+            thumbnail_item.appendChild(remove_btn);
+            thumbnail_item.appendChild(img);
+            thumbnail_item.appendChild(name_container);
+            thumbnail_item.appendChild(save_link);
+            container.appendChild(thumbnail_item);
+            converted_items.append(item_data);
 
             def update_name(event):
                 new_basename = name_input.value.strip()
@@ -487,7 +488,7 @@ async def main():
                 new_download_name = f"{new_basename}{extension}"
                 unique_new_download_name = generate_unique_name(new_download_name)
                 save_link.download = unique_new_download_name
-                item_data['name'] = unique_download_name
+                item_data['name'] = unique_new_download_name
 
             name_input.addEventListener("change", create_proxy(update_name))
             name_input.addEventListener("blur", create_proxy(update_name))
@@ -700,7 +701,7 @@ async def main():
     update_convert_button_visibility()
     update_download_button_visibility()
 
-asyncio.ensure_future(main())
+asyncio.ensure_future(main());
 
     </script>
 </body>
