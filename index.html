@@ -23,553 +23,190 @@
     <meta name="twitter:description" content="Easily convert images to formats like JPEG, PNG, WEBP, and more with Morpha.app's free online Image Format Converter. No downloads or ads required.">
     <meta name="twitter:image" content="https://morpha.app/morpha.svg">
 
-    <!-- Styles and Scripts -->
+    <!-- Include PyScript CSS and JS (Latest Version) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.css">
     <script type="module" src="https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 
-    <!-- Structured Data -->
-    <script type="application/ld+json">
-    {
-        "@context": "http://schema.org",
-        "@type": "SoftwareApplication",
-        "name": "Image Format Converter",
-        "url": "https://morpha.app/",
-        "logo": "https://morpha.app/morpha.svg",
-        "description": "An online tool to convert image formats including JPEG, PNG, WEBP, and more.",
-        "applicationCategory": "MultimediaApplication",
-        "operatingSystem": "All",
-        "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "USD"
-        }
-    }
+    <!-- Include Tailwind CSS via Official CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Tailwind CSS Configuration -->
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              purple: {
+                600: '#5539cc',
+                700: '#4a32b2',
+              },
+            },
+          },
+        },
+      }
     </script>
 
-    <!-- Custom Styles -->
+    <!-- Custom Styles (for Spinner and Toggle Switch) -->
     <style>
-        /* CSS Variables for easy theme management */
-        :root {
-            --primary-color: #5539cc; /* Purple */
-            --secondary-color: #ffffff; /* White */
-            --accent-color: #2173d1;
-            --background-color: #f4f6f9;
-            --text-color: #333333;
-            --heading-color: #000000; /* Black */
-            --border-color: #e0e0e0;
-            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            --spinner-border-color: rgba(0, 0, 0, 0.1);
-            --border-radius: 8px;
-            --transition-duration: 0.3s;
-            --font-family: 'Inter', sans-serif;
-            --button-text-color: #ffffff; /* White */
-
-            /* Toggle Switch Specific Variables */
-            --toggle-light: #d8dbe0; /* Light color for toggle background */
-            --toggle-dark: #28292c; /* Dark color for toggle background */
-            --toggle-thumb-color: #5539cc; /* Thumb color */
+        /* Spinner Animation */
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-
-        /* Dark Mode Variables */
-        body.dark-mode {
-            --primary-color: #5539cc; /* Same purple as light mode */
-            --secondary-color: #1e1e1e; /* Dark background */
-            --accent-color: #2173d1;
-            --background-color: #121212;
-            --text-color: #e0e0e0;
-            --heading-color: #ffffff; /* White */
-            --border-color: #333333;
-            --box-shadow: none; /* Remove box-shadow in dark mode */
-            --spinner-border-color: rgba(255, 255, 255, 0.1);
-            --button-text-color: #ffffff; /* White */
-
-            /* Toggle Switch Specific Variables for Dark Mode */
-            --toggle-light: #5539cc; /* Swap light and dark for toggle in dark mode */
-            --toggle-dark: #d8dbe0;
+        .spinner {
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-left-color: #5539cc;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
         }
-
-        /* Reset and Base Styling */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: var(--font-family);
-            background-color: var(--background-color);
-            color: var(--text-color);
-            line-height: 1.6;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-            transition: background-color var(--transition-duration), color var(--transition-duration);
-            overflow-x: hidden; /* Prevent horizontal scrollbar */
-        }
-        a {
-            color: var(--primary-color);
-            text-decoration: none;
-        }
-        a:hover {
-            text-decoration: underline;
-        }
-
-        /* Header Styling */
-        .header {
-            background-color: var(--secondary-color);
-            padding: 1em 2em; /* Increased padding for better spacing */
-            box-shadow: var(--box-shadow);
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
-        }
-        .header img {
-            max-width: 180px;
-            height: auto;
-        }
-
-        /* Custom Toggle Switch Styling */
+        /* Dark Mode Toggle Switch */
         .toggle-switch {
-            width: 100px;
-            height: 50px;
             position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
         }
-
-        .toggle-switch .checkbox {
-            position: absolute;
+        .toggle-switch input {
             opacity: 0;
             width: 0;
             height: 0;
         }
-
-        .toggle-switch .switch-label {
+        .switch-label {
             position: absolute;
-            width: 100%;
-            height: 100%;
-            background-color: var(--toggle-dark);
-            border-radius: 25px;
             cursor: pointer;
-            border: 3px solid var(--toggle-dark);
-            transition: background-color var(--transition-duration), border-color var(--transition-duration);
+            inset: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
         }
-
-        .toggle-switch .switch-label::before {
+        .switch-label::before {
+            position: absolute;
             content: "";
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 25px;
-            height: 25px;
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
             border-radius: 50%;
-            box-shadow: inset 12px -4px 0px 0px var(--toggle-light);
-            background-color: var(--toggle-dark);
-            transition: transform var(--transition-duration), background-color var(--transition-duration), box-shadow var(--transition-duration);
         }
-
-        .toggle-switch .checkbox:checked + .switch-label::before {
-            transform: translateX(50px);
-            background-color: var(--toggle-dark);
-            box-shadow: none;
+        input:checked + .switch-label {
+            background-color: #5539cc;
         }
-
-        .toggle-switch .checkbox:checked + .switch-label {
-            background-color: var(--toggle-light);
-            border-color: var(--toggle-light);
-        }
-
-        /* Main Content Styling */
-        .main-container {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding: 2em 1em;
-            width: 100%;
-        }
-        h1, h2, h3 {
-            color: var(--heading-color); /* Dynamic based on theme */
-            margin-bottom: 0.5em;
-            transition: color var(--transition-duration);
-        }
-        h1 {
-            font-size: 2.5rem;
-            text-align: center;
-        }
-        p {
-            font-size: 1.1rem;
-            text-align: center;
-            max-width: 800px;
-            margin-bottom: 1.5em;
-        }
-
-        /* Content Containers */
-        .content-container {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 2em;
-            width: 100%;
-            max-width: 1200px;
-        }
-        .container {
-            background-color: var(--secondary-color);
-            padding: 2em;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            flex: 1;
-            min-width: 300px;
-            max-width: 500px;
-            position: relative;
-            transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
-        }
-
-        /* Form and Button Styling */
-        .input-section, .convert-section {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 1em;
-            margin-top: 1em;
-        }
-        .input-section input[type="text"],
-        .convert-section select {
-            flex: 1;
-            padding: 0.8em;
-            font-size: 1rem;
-            border: 1px solid var(--border-color);
-            background-color: var(--secondary-color);
-            color: var(--text-color);
-            border-radius: var(--border-radius);
-            min-width: 0;
-            transition: background-color var(--transition-duration), color var(--transition-duration), border-color var(--transition-duration);
-        }
-        .input-section button,
-        .convert-section button,
-        #download-all-button {
-            padding: 0.8em 1.5em;
-            background-color: var(--primary-color);
-            color: var(--button-text-color); /* White */
-            border: none;
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform var(--transition-duration), background-color var(--transition-duration);
-        }
-        .input-section button:hover,
-        .convert-section button:hover,
-        #download-all-button:hover {
-            transform: scale(1.05);
-            /* Removed background-color change on hover */
-        }
-
-        /* File Inputs */
-        input[type="file"] {
-            display: none;
-        }
-        .file-label {
-            padding: 0.8em 1.5em;
-            background-color: var(--primary-color);
-            color: var(--button-text-color); /* White */
-            border: none;
-            border-radius: var(--border-radius);
-            font-size: 1rem;
-            cursor: pointer;
-            transition: transform var(--transition-duration), color var(--transition-duration);
-        }
-        .file-label:hover {
-            transform: scale(1.05);
-            /* Removed background-color change on hover */
-            /* Ensure text color remains white */
-            color: var(--button-text-color);
-        }
-
-        /* Thumbnail and Converted Lists */
-        .thumbnail-list, .converted-list {
-            margin-top: 1.5em;
-            display: flex;
-            flex-direction: column;
-            gap: 1em;
-            max-height: 200px;
-            overflow-y: auto;
-            padding: 1em;
-            background-color: var(--secondary-color);
-            border: 1px solid var(--border-color);
-            border-radius: var(--border-radius);
-            transition: background-color var(--transition-duration), border-color var(--transition-duration);
-        }
-        .thumbnail-item {
-            display: flex;
-            align-items: center;
-            gap: 1em;
-        }
-        .thumbnail-item img {
-            width: 60px;
-            height: 60px;
-            object-fit: cover;
-            border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            transition: border-color var(--transition-duration);
-        }
-        .thumbnail-item span {
-            flex: 1;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        .thumbnail-item button {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            font-size: 1.2rem;
-            color: var(--text-color);
-            transition: transform var(--transition-duration), color var(--transition-duration);
-        }
-        .thumbnail-item button:hover {
-            transform: scale(1.2);
-            color: var(--primary-color);
-        }
-        .thumbnail-item .remove-btn {
-            order: -1; /* Move the remove button to the left */
-        }
-
-        /* Spinner Styling */
-        .spinner-container {
-            display: flex;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            justify-content: center;
-            align-items: center;
-        }
-        .spinner {
-            border: 4px solid var(--spinner-border-color);
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            border-left-color: var(--primary-color);
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Hide input content initially */
-        .input-content {
-            display: none;
-        }
-
-        /* Additional Content Styling */
-        .section-container {
-            background-color: var(--secondary-color);
-            padding: 2em;
-            margin: 2em auto;
-            border-radius: var(--border-radius);
-            box-shadow: var(--box-shadow);
-            max-width: 800px;
-            transition: background-color var(--transition-duration), box-shadow var(--transition-duration);
-        }
-        .section-container h2 {
-            text-align: center;
-            margin-bottom: 1em;
-            /* Removed color override to inherit from --heading-color */
-            color: var(--heading-color);
-            transition: color var(--transition-duration);
-        }
-        .section-container p,
-        .section-container ul,
-        .section-container ol {
-            text-align: left;
-            color: var(--text-color);
-            transition: color var(--transition-duration);
-        }
-        .section-container ul,
-        .section-container ol {
-            padding-left: 1.5em;
-            margin-bottom: 1em;
-        }
-        .section-container li {
-            margin-bottom: 0.5em;
-        }
-
-        /* Style FAQ Questions (h3) to be purple in light mode and white in dark mode */
-        .faq-container h3 {
-            color: var(--primary-color); /* Purple in light mode */
-            transition: color var(--transition-duration);
-        }
-        body.dark-mode .faq-container h3 {
-            color: var(--heading-color); /* White in dark mode */
-        }
-
-        /* Style specific text to always be purple */
-        .purple-text {
-            color: var(--primary-color); /* Purple */
-        }
-
-        /* Style Save Links */
-        .save-link {
-            text-decoration: none;
-            color: var(--primary-color); /* Purple */
-            transition: transform var(--transition-duration);
-        }
-        .save-link:hover {
-            transform: scale(1.05);
-            text-decoration: none; /* Remove underline */
-        }
-
-        /* Spacing between converted list and download button */
-        #download-all-button {
-            margin-top: 1em;
-        }
-
-        /* Responsive Adjustments */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-            .content-container {
-                flex-direction: column;
-                align-items: center;
-            }
-            .container {
-                max-width: 100%;
-            }
-        }
-        @media (max-width: 480px) {
-            h1 {
-                font-size: 1.5rem;
-            }
-            .header img {
-                max-width: 120px;
-            }
-            .input-section button,
-            .convert-section button,
-            .file-label {
-                padding: 0.6em 1em;
-                font-size: 0.9rem;
-            }
-            .toggle-switch {
-                width: 80px;
-                height: 40px;
-            }
-            .toggle-switch .switch-label::before {
-                top: 5px;
-                left: 5px;
-                width: 20px;
-                height: 20px;
-            }
-            .toggle-switch .checkbox:checked + .switch-label::before {
-                transform: translateX(40px);
-            }
+        input:checked + .switch-label::before {
+            transform: translateX(26px);
         }
     </style>
+
+    <!-- PyScript Configuration -->
     <py-config>
         packages = ["micropip"]
+        splashscreen = false
     </py-config>
 </head>
-<body>
-    <header class="header">
-        <img id="logo" src="morpha.svg" alt="Morpha Logo - Free Online Image Format Converter">
+<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <!-- Header -->
+    <header class="bg-white dark:bg-gray-800 p-4 shadow flex items-center justify-between">
+        <img id="logo" src="morpha.svg" alt="Morpha Logo - Free Online Image Format Converter" class="w-40 h-auto">
         
-        <!-- Custom Toggle Switch for Dark Mode -->
+        <!-- Dark Mode Toggle Switch -->
         <div class="toggle-switch">
             <input type="checkbox" class="checkbox" id="dark-mode-toggle-checkbox">
-            <label for="dark-mode-toggle-checkbox" class="switch-label">
-                <div class="slider"></div>
-            </label>
+            <label for="dark-mode-toggle-checkbox" class="switch-label"></label>
         </div>
     </header>
-    <main class="main-container">
-        <h1>Free Online Image Format Converter</h1>
-        <p>Morpha Image Format Converter allows you to convert images to various formats quickly and easily. With support for <strong class="purple-text">JPEG, PNG, WEBP, BMP, TIFF, ICO, PPM</strong> and <strong class="purple-text">TGA</strong>, you can ensure compatibility across different platforms and uses.</p>
 
-        <div class="content-container">
-            <div class="container">
-                <h2>Image Input</h2>
-                <div class="spinner-container">
+    <!-- Main Content -->
+    <main class="flex flex-col items-center p-4 w-full">
+        <h1 class="text-3xl font-bold text-center my-4">Free Online Image Format Converter</h1>
+
+        <div class="flex flex-wrap justify-center gap-8 w-full max-w-6xl">
+            <!-- Image Input Container -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow w-full max-w-md relative">
+                <h2 class="text-2xl font-semibold mb-4">Image Input</h2>
+                <!-- Spinner (initially visible) -->
+                <div class="spinner-container flex justify-center items-center">
                     <div class="spinner"></div>
                 </div>
-                <div class="input-content">
-                    <div class="input-section">
-                        <label for="input-file" class="file-label">Select Images</label>
-                        <input type="file" id="input-file" accept="image/*" multiple>
-                        <label for="directory-file" class="file-label">Add Directory</label>
-                        <input type="file" id="directory-file" accept="image/*" webkitdirectory>
-                    </div>
-                    <div class="input-section">
-                        <input type="text" id="input-url" placeholder="Enter image URL">
-                        <button id="add-url-button">Add URL</button>
-                    </div>
-                    <div class="thumbnail-list" id="thumbnail-list"></div>
-                    <div class="convert-section">
-                        <select id="format-select">
-                            <option value="JPEG">JPEG</option>
-                            <option value="PNG">PNG</option>
-                            <option value="WEBP">WEBP</option>
-                            <option value="BMP">BMP</option>
-                            <option value="TIFF">TIFF</option>
-                            <option value="ICO">ICO</option>
-                            <option value="PPM">PPM</option>
-                            <option value="TGA">TGA</option>
-                        </select>
-                        <button id="convert-button">Convert Images</button>
+                <!-- Input Content (initially hidden) -->
+                <div class="input-content hidden">
+                    <div class="flex flex-col gap-4">
+                        <!-- File and Directory Input -->
+                        <div class="flex gap-2">
+                            <label for="input-file" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded cursor-pointer transition">Select Images</label>
+                            <input type="file" id="input-file" accept="image/*" multiple class="hidden">
+                            
+                            <label for="directory-file" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded cursor-pointer transition">Add Directory</label>
+                            <input type="file" id="directory-file" accept="image/*" webkitdirectory class="hidden">
+                        </div>
+                        <!-- URL Input -->
+                        <div class="flex gap-2">
+                            <input type="text" id="input-url" placeholder="Enter image URL" class="flex-1 px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                            <button id="add-url-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition">Add URL</button>
+                        </div>
+                        <!-- Thumbnail List -->
+                        <div class="mt-4 max-h-48 overflow-y-auto" id="thumbnail-list"></div>
+                        <!-- Convert Section -->
+                        <div class="flex gap-2 mt-4">
+                            <select id="format-select" class="flex-1 px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                                <option value="JPEG">JPEG</option>
+                                <option value="PNG">PNG</option>
+                                <option value="WEBP">WEBP</option>
+                                <option value="BMP">BMP</option>
+                                <option value="TIFF">TIFF</option>
+                                <option value="ICO">ICO</option>
+                                <option value="PPM">PPM</option>
+                                <option value="TGA">TGA</option>
+                            </select>
+                            <button id="convert-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition">Convert Images</button>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="container">
-                <h2>Image Output</h2>
-                <div class="converted-list" id="converted-list"></div>
-                <button id="download-all-button" style="display: none;">Download</button>
+            <!-- Image Output Container -->
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow w-full max-w-md">
+                <h2 class="text-2xl font-semibold mb-4">Image Output</h2>
+                <div id="converted-list" class="max-h-64 overflow-y-auto"></div>
+                <button id="download-all-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded mt-4 hidden transition">Download All</button>
             </div>
         </div>
     </main>
 
-    <!-- Additional SEO-Optimized Content Below the Tool -->
-    <section class="section-container">
-        <h2>Why Choose Morpha Image Format Converter?</h2>
-        <p>Converting images has never been easier. Morpha.app offers a seamless free experience, allowing you to convert multiple images at once without any software installation or intrusive ads.</p>
-    </section>
-
-    <section class="section-container">
-        <h2>How to Convert Images</h2>
-        <ol>
-            <li><strong class="purple-text">Select Images:</strong> Click on "Select Images" or "Add Directory" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
-            <li><strong class="purple-text">Choose Format:</strong> Select your desired output format from the dropdown menu.</li>
-            <li><strong class="purple-text">Convert Images:</strong> Click "Convert Images" to start the conversion process.</li>
-            <li><strong class="purple-text">Download:</strong> After conversion, download your images individually or as a ZIP file.</li>
+    <!-- Additional Content -->
+    <section class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow max-w-3xl mx-auto mt-8">
+        <h2 class="text-2xl font-semibold mb-4 text-center">How to Convert Images</h2>
+        <ol class="list-decimal list-inside text-left space-y-2">
+            <li><strong class="text-purple-600">Select Images:</strong> Click on "Select Images" or "Add Directory" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
+            <li><strong class="text-purple-600">Choose Format:</strong> Select your desired output format from the dropdown menu.</li>
+            <li><strong class="text-purple-600">Convert Images:</strong> Click "Convert Images" to start the conversion process.</li>
+            <li><strong class="text-purple-600">Download:</strong> After conversion, download your images individually or as a ZIP file.</li>
         </ol>
     </section>
 
-    <section class="section-container">
-        <h2>Supported Image Formats</h2>
-        <ul>
-            <li><strong class="purple-text">JPEG:</strong> Widely used for digital photography and web images.</li>
-            <li><strong class="purple-text">PNG:</strong> Ideal for images requiring transparency.</li>
-            <li><strong class="purple-text">WEBP:</strong> Modern format offering superior compression.</li>
-            <li><strong class="purple-text">BMP:</strong> Standard format for Windows systems.</li>
-            <li><strong class="purple-text">TIFF:</strong> Preferred by professionals for high-quality images.</li>
-            <li><strong class="purple-text">ICO:</strong> Used for icons in applications.</li>
-            <li><strong class="purple-text">PPM:</strong> Simple format for pixel images.</li>
-            <li><strong class="purple-text">TGA:</strong> Commonly used in animation and gaming.</li>
-        </ul>
+    <!-- FAQ Section -->
+    <section class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow max-w-3xl mx-auto mt-8">
+        <h2 class="text-2xl font-semibold mb-4 text-center">Frequently Asked Questions</h2>
+        <div class="space-y-4">
+            <div>
+                <h3 class="text-xl font-semibold text-purple-600">Is the converter free to use?</h3>
+                <p>Yes, our image format converter is completely free with no hidden costs and no ads.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-purple-600">Do I need to register or sign up?</h3>
+                <p>No registration is required. You can convert images instantly.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-purple-600">Is there a limit to the number of images I can convert?</h3>
+                <p>There are no limits. Convert as many images as you need.</p>
+            </div>
+            <div>
+                <h3 class="text-xl font-semibold text-purple-600">Are my images secure?</h3>
+                <p>Your privacy is our priority. We do not store your images after conversion.</p>
+            </div>
+        </div>
     </section>
-
-    <section class="section-container faq-container">
-        <h2>Frequently Asked Questions</h2>
-        <h3>Is the converter free to use?</h3>
-        <p>Yes, our image format converter is completely free with no hidden costs and no ads.</p>
-
-        <h3>Do I need to register or sign up?</h3>
-        <p>No registration is required. You can convert images instantly.</p>
-
-        <h3>Is there a limit to the number of images I can convert?</h3>
-        <p>There are no limits. Convert as many images as you need.</p>
-
-        <h3>Are my images secure?</h3>
-        <p>Your privacy is our priority. We do not store your images after conversion.</p>
-    </section>
-    <!-- End of Additional Content -->
 
     <!-- Dark Mode Toggle Script -->
     <script>
@@ -579,10 +216,10 @@
 
         function setTheme(theme) {
             if (theme === 'dark') {
-                document.body.classList.add('dark-mode');
+                document.documentElement.classList.add('dark');
                 logo.src = 'morpha_dark.svg';
             } else {
-                document.body.classList.remove('dark-mode');
+                document.documentElement.classList.remove('dark');
                 logo.src = 'morpha.svg';
             }
         }
@@ -603,7 +240,11 @@
         });
     </script>
 
+    <!-- PyScript Code -->
     <py-script>
+    import asyncio
+
+    async def main():
         import io
         import zipfile
         from js import document, Blob, URL, Uint8Array, console
@@ -612,8 +253,8 @@
         from pyodide.ffi import create_proxy
 
         # Show the spinner and hide the input content initially
-        document.querySelector('.spinner-container').style.display = 'flex'
-        document.querySelector('.input-content').style.display = 'none'
+        document.querySelector('.spinner-container').classList.remove('hidden')
+        document.querySelector('.input-content').classList.add('hidden')
 
         # Install Pillow
         console.log("Loading Pillow...")
@@ -623,8 +264,8 @@
         from PIL import Image
 
         # After loading Pillow, hide the spinner and show the input content
-        document.querySelector('.spinner-container').style.display = 'none'
-        document.querySelector('.input-content').style.display = 'block'
+        document.querySelector('.spinner-container').classList.add('hidden')
+        document.querySelector('.input-content').classList.remove('hidden')
 
         # Initializing the lists
         thumbnail_list = document.getElementById("thumbnail-list")
@@ -666,22 +307,24 @@
 
         def display_thumbnail(src, name, container, item_data, is_converted=False):
             thumbnail_item = document.createElement("div")
-            thumbnail_item.className = "thumbnail-item"
+            thumbnail_item.className = "flex items-center gap-2 mb-2"
 
             # Remove Button
             remove_btn = document.createElement("button")
             remove_btn.innerHTML = "&#10005;"  # Cross symbol
-            remove_btn.className = "remove-btn"
+            remove_btn.className = "text-red-500 hover:text-red-700 text-xl focus:outline-none"
             remove_btn.onclick = create_proxy(lambda e: remove_image(item_data, container, thumbnail_item))
 
             # Image Element
             img = document.createElement("img")
             img.src = src
             img.alt = name
+            img.className = "w-12 h-12 object-cover rounded border"
 
             # Name Span
             text = document.createElement("span")
             text.textContent = name
+            text.className = "flex-1 truncate"
 
             # Append Elements in order
             thumbnail_item.appendChild(remove_btn)
@@ -694,9 +337,7 @@
                 save_link.href = src
                 save_link.download = name
                 save_link.innerHTML = "&#128190;"  # Floppy disk symbol
-                save_link.style.fontSize = "1.2rem"
-                save_link.style.marginLeft = "0.5em"
-                save_link.className = "save-link"  # Added class for styling
+                save_link.className = "text-green-500 hover:text-green-700 text-xl ml-2"
                 thumbnail_item.appendChild(save_link)
                 converted_items.append(item_data)
 
@@ -721,8 +362,8 @@
             selected_format = document.getElementById("format-select").value
 
             # Show spinner during conversion
-            document.querySelector('.spinner-container').style.display = 'flex'
-            document.querySelector('.input-content').style.display = 'none'
+            document.querySelector('.spinner-container').classList.remove('hidden')
+            document.querySelector('.input-content').classList.add('hidden')
 
             for item in items:
                 if item["type"] == "file":
@@ -752,10 +393,10 @@
                 display_thumbnail(blob_url, download_name, converted_list, converted_item_data, is_converted=True)
 
             # Hide spinner and show input content
-            document.querySelector('.spinner-container').style.display = 'none'
-            document.querySelector('.input-content').style.display = 'block'
+            document.querySelector('.spinner-container').classList.add('hidden')
+            document.querySelector('.input-content').classList.remove('hidden')
 
-            document.getElementById("download-all-button").style.display = 'block'
+            document.getElementById("download-all-button").classList.remove('hidden')
 
         def download_all(event):
             zip_io = io.BytesIO()
@@ -782,16 +423,18 @@
         document.getElementById("input-file").addEventListener("change", create_proxy(add_file))
         document.getElementById("directory-file").addEventListener("change", create_proxy(add_directory))
         document.getElementById("add-url-button").addEventListener("click", create_proxy(add_url))
+        document.getElementById("convert-button").addEventListener("click", create_proxy(convert_images))
+        document.getElementById("download-all-button").addEventListener("click", create_proxy(download_all))
 
-        # Reusing existing code for pressing Enter
+        # Handle Enter key press in URL input
         async def input_url_keydown(event):
             if event.key == 'Enter':
                 await add_url(event)
 
         document.getElementById("input-url").addEventListener("keydown", create_proxy(input_url_keydown))
 
-        document.getElementById("convert-button").addEventListener("click", create_proxy(convert_images))
-        document.getElementById("download-all-button").addEventListener("click", create_proxy(download_all))
+    # Schedule the 'main' coroutine
+    asyncio.ensure_future(main())
     </py-script>
 </body>
 </html>
