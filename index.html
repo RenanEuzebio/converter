@@ -47,7 +47,7 @@
       }
     </script>
 
-    <!-- Custom Styles (for Spinner and Toggle Switch) -->
+    <!-- Custom Styles (for Spinner, Toggle Switch, and Custom Shadow) -->
     <style>
         /* Spinner Animation */
         @keyframes spin {
@@ -98,6 +98,10 @@
         input:checked + .switch-label::before {
             transform: translateX(26px);
         }
+        /* Custom Soft Shadow */
+        .custom-shadow {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
     </style>
 
     <!-- PyScript Configuration -->
@@ -108,7 +112,7 @@
 </head>
 <body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
     <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 p-4 shadow flex items-center justify-between">
+    <header class="bg-white dark:bg-gray-800 p-4 flex items-center justify-between custom-shadow">
         <img id="logo" src="morpha.svg" alt="Morpha Logo - Free Online Image Format Converter" class="w-40 h-auto">
         
         <!-- Dark Mode Toggle Switch -->
@@ -121,10 +125,17 @@
     <!-- Main Content -->
     <main class="flex flex-col items-center p-4 w-full">
         <h1 class="text-3xl font-bold text-center my-4">Free Online Image Format Converter</h1>
+        <!-- Description -->
+        <p class="text-center text-gray-600 dark:text-gray-300 mt-2 max-w-2xl">
+            Convert your images to various formats quickly and effortlessly.
+        </p>
+
+        <!-- Gap between description and containers -->
+        <div class="mt-6"></div>
 
         <div class="flex flex-wrap justify-center gap-8 w-full max-w-6xl">
             <!-- Image Input Container -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow w-full max-w-md relative">
+            <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-md relative custom-shadow rounded-xl">
                 <h2 class="text-2xl font-semibold mb-4">Image Input</h2>
                 <!-- Spinner (initially visible) -->
                 <div class="spinner-container flex justify-center items-center">
@@ -166,7 +177,7 @@
                 </div>
             </div>
             <!-- Image Output Container -->
-            <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow w-full max-w-md">
+            <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-md custom-shadow rounded-xl">
                 <h2 class="text-2xl font-semibold mb-4">Image Output</h2>
                 <div id="converted-list" class="max-h-64 overflow-y-auto"></div>
                 <button id="download-all-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded mt-4 hidden transition">Download All</button>
@@ -175,7 +186,7 @@
     </main>
 
     <!-- Additional Content -->
-    <section class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow max-w-3xl mx-auto mt-8">
+    <section class="bg-white dark:bg-gray-800 p-6 max-w-3xl mx-auto mt-8 custom-shadow rounded-xl mb-8">
         <h2 class="text-2xl font-semibold mb-4 text-center">How to Convert Images</h2>
         <ol class="list-decimal list-inside text-left space-y-2">
             <li><strong class="text-purple-600">Select Images:</strong> Click on "Select Images" or "Add Directory" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
@@ -186,7 +197,7 @@
     </section>
 
     <!-- FAQ Section -->
-    <section class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow max-w-3xl mx-auto mt-8">
+    <section class="bg-white dark:bg-gray-800 p-6 max-w-3xl mx-auto mt-8 custom-shadow rounded-xl mb-8">
         <h2 class="text-2xl font-semibold mb-4 text-center">Frequently Asked Questions</h2>
         <div class="space-y-4">
             <div>
