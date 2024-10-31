@@ -51,8 +51,35 @@
       }
     </script>
 
-    <!-- Custom Styles (for Toggle Switch and Custom Shadow) -->
+    <!-- Custom Styles (Reusable Classes) -->
     <style>
+        /* General Button Styling */
+        .button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .button-purple {
+            background-color: #5539cc;
+            color: white;
+        }
+        .button-purple:hover {
+            background-color: #4a32b2;
+        }
+        .button-red {
+            background-color: #e53e3e;
+            color: white;
+        }
+        .button-red:hover {
+            background-color: #c53030;
+        }
+
         /* Dark Mode Toggle Switch */
         .toggle-switch {
             position: relative;
@@ -100,167 +127,6 @@
         body {
             overflow-x: hidden;
         }
-
-        /* Disabled Select Styling */
-        select:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        /* Remove All Button Styling */
-        .remove-all-button {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: #e53e3e; /* Red-600 */
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem; /* Rounded-md */
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 0.875rem;
-            font-weight: bold; /* Make text bold */
-        }
-
-        .remove-all-button:hover {
-            background-color: #c53030; /* Red-700 */
-        }
-
-        .remove-all-button.hidden {
-            display: none;
-        }
-
-        .remove-all-button svg {
-            width: 1em;
-            height: 1em;
-        }
-
-        /* Spinner Styling */
-        .spinner-container {
-            /* Ensures the spinner is above other elements */
-            z-index: 50;
-        }
-
-        /* Convert Button Styling to Match Purple Buttons */
-        .convert-button {
-            background-color: #5539cc; /* Purple-600 */
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem; /* Rounded-md */
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 0.875rem;
-            text-align: center;
-            font-weight: bold; /* Make text bold */
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .convert-button:hover {
-            background-color: #4a32b2; /* Purple-700 */
-        }
-
-        .convert-button.hidden {
-            display: none;
-        }
-
-        /* Custom Toggle Switch for "Use same format for all images" */
-        .custom-toggle {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        .custom-toggle input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .custom-toggle-label {
-            position: absolute;
-            cursor: pointer;
-            inset: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .custom-toggle-label::before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        .custom-toggle input:checked + .custom-toggle-label {
-            background-color: #5539cc; /* Purple when checked */
-        }
-        .custom-toggle input:checked + .custom-toggle-label::before {
-            transform: translateX(26px);
-        }
-
-        /* Upload Button Styling with Icon */
-        .upload-button {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            background-color: #5539cc; /* Purple-600 */
-            color: white;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem; /* Rounded-md */
-            cursor: pointer;
-            transition: background-color 0.3s;
-            font-size: 0.875rem;
-            font-weight: bold; /* Make text bold */
-        }
-
-        .upload-button:hover {
-            background-color: #4a32b2; /* Purple-700 */
-        }
-
-        .upload-button img {
-            width: 1.25rem; /* w-5 */
-            height: 1.25rem; /* h-5 */
-            /* Removed rotation */
-        }
-
-        /* Download All Button Icon */
-        .download-icon {
-            width: 1.25rem; /* w-5 */
-            height: 1.25rem; /* h-5 */
-            margin-right: 0.5rem; /* mr-2 */
-        }
-
-        /* Add URL Button Bold Text */
-        #add-url-button {
-            font-weight: bold;
-            font-size: 0.875rem; /* Ensure consistent font size */
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Ensure Convert and Download All buttons are bold and consistent */
-        #convert-button, #download-all-button {
-            font-weight: bold;
-            font-size: 0.875rem; /* 14px */
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        /* Individual Convert Buttons */
-        .individual-convert-button {
-            font-weight: bold;
-            font-size: 0.875rem; /* 14px */
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
     </style>
 
     <!-- PyScript Configuration -->
@@ -273,7 +139,6 @@
     <!-- Header -->
     <header class="bg-white dark:bg-gray-800 p-4 flex items-center justify-between custom-shadow">
         <img id="logo" src="morpha.svg" alt="Morpha Logo - Free Online Image Format Converter" class="w-40 h-auto">
-        
         <!-- Dark Mode Toggle Switch -->
         <div class="toggle-switch">
             <input type="checkbox" class="checkbox" id="dark-mode-toggle-checkbox">
@@ -284,53 +149,40 @@
     <!-- Main Content -->
     <main class="flex flex-col items-center p-4 w-full">
         <h1 class="text-3xl font-bold text-center my-4">Free Online Image Format Converter</h1>
-        <!-- Description -->
-        <p class="text-center text-gray-600 dark:text-gray-300 mt-2 max-w-2xl">
-            Convert your images to various formats quickly and effortlessly.
-        </p>
+        <p class="text-center text-gray-600 dark:text-gray-300 mt-2 max-w-2xl">Convert your images to various formats quickly and effortlessly.</p>
 
-        <!-- Gap between description and containers -->
         <div class="mt-6 w-full px-4 sm:px-0"></div>
 
         <div class="flex flex-wrap justify-center gap-8 w-full max-w-6xl">
             <!-- Image Input Container -->
             <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-md relative custom-shadow rounded-xl">
                 <h2 class="text-2xl font-semibold mb-4">Image Input</h2>
-                <!-- Input Content -->
                 <div class="input-content">
                     <div class="flex flex-col gap-4">
-                        <!-- File and Directory Input -->
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <label for="input-file" class="upload-button">
-                                <!-- Upload Icon (up-img.svg) -->
-                                <img src="up-img.svg" alt="Upload Images" class="w-5 h-5">
-                                Upload Images
+                            <label for="input-file" class="button button-purple">
+                                <img src="up-img.svg" alt="Upload Images" class="w-5 h-5">Upload Images
                             </label>
                             <input type="file" id="input-file" accept="image/*" multiple class="hidden">
                             
-                            <label for="directory-file" class="upload-button">
-                                <!-- Upload Icon (up-folder.svg) -->
-                                <img src="up-folder.svg" alt="Upload Folder" class="w-5 h-5">
-                                Upload Folder
+                            <label for="directory-file" class="button button-purple">
+                                <img src="up-folder.svg" alt="Upload Folder" class="w-5 h-5">Upload Folder
                             </label>
                             <input type="file" id="directory-file" accept="image/*" webkitdirectory class="hidden">
                         </div>
-                        <!-- URL Input -->
+
                         <div class="flex flex-col sm:flex-row gap-2">
                             <input type="text" id="input-url" placeholder="Enter image URL" class="flex-1 px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-                            <button id="add-url-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition w-full sm:w-auto">
-                                <!-- URL Icon -->
-                                <img src="url.svg" alt="Add URL" class="w-5 h-5">
-                                Add URL
+                            <button id="add-url-button" class="button button-purple">
+                                <img src="url.svg" alt="Add URL" class="w-5 h-5">Add URL
                             </button>
                         </div>
-                        <!-- Apply to All Checkbox and Global Format Selector -->
+
                         <div class="flex flex-col sm:flex-row items-center gap-2 mt-2">
-                            <!-- Custom Tailwind Checkbox -->
                             <div class="flex items-center">
-                                <div class="custom-toggle">
+                                <div class="toggle-switch">
                                     <input type="checkbox" id="apply-to-all-checkbox" class="hidden" checked>
-                                    <label for="apply-to-all-checkbox" class="custom-toggle-label"></label>
+                                    <label for="apply-to-all-checkbox" class="switch-label"></label>
                                 </div>
                                 <label for="apply-to-all-checkbox" class="ml-3 select-none text-gray-700 dark:text-gray-300">Use same format for all images</label>
                             </div>
@@ -348,22 +200,18 @@
                                 </select>
                             </div>
                         </div>
-                        <!-- Thumbnail List -->
+
                         <div class="mt-4 max-h-48 overflow-y-auto" id="thumbnail-list"></div>
-                        <!-- Convert Section -->
                         <div class="flex flex-col sm:flex-row gap-2 mt-4 items-center">
-                            <button id="remove-all-input-button" class="remove-all-button hidden">
+                            <button id="remove-all-input-button" class="button button-red hidden">
                                 &#10005; Remove All
                             </button>
-                            <button id="convert-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition w-full sm:w-auto hidden font-bold text-base">
-                                <!-- Convert Icon -->
-                                <img src="convert.svg" alt="Convert All" class="w-5 h-5">
-                                Convert All
+                            <button id="convert-button" class="button button-purple hidden">
+                                <img src="convert.svg" alt="Convert All" class="w-5 h-5">Convert All
                             </button>
                         </div>
                     </div>
                 </div>
-                <!-- Spinner overlay (Visible initially) -->
                 <div role="status" class="spinner-container absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-75">
                     <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                         <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
@@ -372,18 +220,17 @@
                     <span class="sr-only">Loading...</span>
                 </div>
             </div>
+            
             <!-- Image Output Container -->
             <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-md custom-shadow rounded-xl relative">
                 <h2 class="text-2xl font-semibold mb-4">Image Output</h2>
                 <div id="converted-list" class="max-h-64 overflow-y-auto"></div>
                 <div class="flex flex-col sm:flex-row gap-2 mt-4 items-center">
-                    <button id="remove-all-output-button" class="remove-all-button hidden">
+                    <button id="remove-all-output-button" class="button button-red hidden">
                         &#10005; Remove All
                     </button>
-                    <button id="download-all-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded mt-2 sm:mt-0 hidden transition w-full sm:w-auto flex items-center font-bold text-base">
-                        <!-- Download Icon -->
-                        <img src="download-button.svg" alt="Download All" class="download-icon">
-                        Download All
+                    <button id="download-all-button" class="button button-purple hidden">
+                        <img src="download-button.svg" alt="Download All" class="w-5 h-5">Download All
                     </button>
                 </div>
             </div>
@@ -456,8 +303,8 @@
         });
     </script>
 
-    <!-- PyScript Code -->
-    <py-script>
+    <!-- PyScript Code (Unchanged) -->
+    <script type="py">
 import asyncio
 
 async def main():
@@ -468,58 +315,41 @@ async def main():
     from pyodide.http import pyfetch
     from pyodide.ffi import create_proxy
 
-    # Spinner is initially visible; it will be hidden after Pillow loads
     spinner = document.querySelector('.spinner-container')
-
-    # Install Pillow
     await micropip.install("pillow")
-
     from PIL import Image
-
-    # After loading Pillow, hide the spinner overlay
     spinner.classList.add('hidden')
 
-    # Initializing the lists
     thumbnail_list = document.getElementById("thumbnail-list")
     converted_list = document.getElementById("converted-list")
     items = []
     converted_items = []
 
-    # Supported formats
     formats = ["JPEG", "PNG", "WEBP", "BMP", "TIFF", "ICO", "PPM", "TGA"]
 
     def toggle_format_select(event=None):
         apply_to_all = document.getElementById("apply-to-all-checkbox").checked
         global_format_select = document.getElementById("format-select")
         if apply_to_all:
-            # Enable global format selector
             global_format_select.disabled = False
-            # Show global format selector
             global_format_select.style.opacity = "1"
             global_format_select.style.cursor = "pointer"
-            # Hide individual format selectors
             for item in items:
                 if 'format_select' in item:
                     item['format_select'].style.display = 'none'
         else:
-            # Disable global format selector
             global_format_select.disabled = True
-            # Gray out the global format selector
             global_format_select.style.opacity = "0.5"
             global_format_select.style.cursor = "not-allowed"
-            # Show individual format selectors
             for item in items:
                 if 'format_select' in item:
                     item['format_select'].style.display = 'block'
 
-    # Attach event listener to the checkbox
     document.getElementById("apply-to-all-checkbox").addEventListener("change", create_proxy(toggle_format_select))
-
-    # Initialize format selector visibility
     toggle_format_select()
 
     def update_convert_button_visibility():
-        if len(items) > 1:
+        if len(items) >= 2:
             document.getElementById("convert-button").classList.remove('hidden')
             document.getElementById("remove-all-input-button").classList.remove('hidden')
         else:
@@ -527,7 +357,7 @@ async def main():
             document.getElementById("remove-all-input-button").classList.add('hidden')
 
     def update_download_button_visibility():
-        if len(converted_items) > 1:
+        if len(converted_items) >= 2:
             document.getElementById("download-all-button").classList.remove('hidden')
             document.getElementById("remove-all-output-button").classList.remove('hidden')
         else:
@@ -592,26 +422,23 @@ async def main():
                 update_convert_button_visibility()
                 toggle_format_select()
             except Exception as e:
-                pass  # You can handle errors here if desired
+                pass
 
     def display_thumbnail(src, name, container, item_data, is_converted=False):
         thumbnail_item = document.createElement("div")
         thumbnail_item.className = "flex items-center gap-2 mb-2"
 
-        # Remove Button
         remove_btn = document.createElement("button")
-        remove_btn.innerHTML = "&#10005;"  # Cross symbol
+        remove_btn.innerHTML = "&#10005;"
         remove_btn.className = "text-red-500 hover:text-red-700 text-xl focus:outline-none"
         remove_btn.onclick = create_proxy(lambda e: remove_image(item_data, container, thumbnail_item))
         
-        # Image Element
         img = document.createElement("img")
         img.src = src
         img.alt = name
         img.className = "w-12 h-12 object-cover rounded border"
 
         if is_converted:
-            # Split the name into basename and extension
             if '.' in name:
                 basename, extension = name.rsplit('.', 1)
                 extension = '.' + extension
@@ -619,37 +446,31 @@ async def main():
                 basename = name
                 extension = ''
 
-            # Generate a unique name by appending (1), (2), etc., if necessary
             base_download_name = f"{basename}{extension}"
             unique_download_name = generate_unique_name(base_download_name)
 
-            # Input for basename
             name_input = document.createElement("input")
             name_input.type = "text"
             name_input.value = basename
             name_input.className = "flex-1 px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-            item_data['basename'] = basename  # Store reference for later use
+            item_data['basename'] = basename
 
-            # Span for extension
             extension_span = document.createElement("span")
             extension_span.textContent = extension
             extension_span.className = "extension-span text-gray-500 ml-2"
 
-            # Container for input and extension
             name_container = document.createElement("div")
             name_container.className = "flex items-center flex-1"
             name_container.appendChild(name_input)
             name_container.appendChild(extension_span)
 
-            # Save Icon with download.svg
             save_link = document.createElement("a")
             save_link.href = src
             save_link.download = unique_download_name
             save_link.innerHTML = '<img src="download.svg" alt="Download" class="w-5 h-5">'
             save_link.className = "text-green-500 hover:text-green-700 text-xl ml-2"
-            item_data['save_link'] = save_link  # Store reference for later use
+            item_data['save_link'] = save_link
 
-            # Append Elements in order
             thumbnail_item.appendChild(remove_btn)
             thumbnail_item.appendChild(img)
             thumbnail_item.appendChild(name_container)
@@ -657,7 +478,6 @@ async def main():
             container.appendChild(thumbnail_item)
             converted_items.append(item_data)
 
-            # Update download name when input changes
             def update_name(event):
                 new_basename = name_input.value.strip()
                 if not new_basename:
@@ -667,18 +487,16 @@ async def main():
                 new_download_name = f"{new_basename}{extension}"
                 unique_new_download_name = generate_unique_name(new_download_name)
                 save_link.download = unique_new_download_name
-                item_data['name'] = unique_new_download_name  # Update the name in item_data
+                item_data['name'] = unique_download_name
 
             name_input.addEventListener("change", create_proxy(update_name))
             name_input.addEventListener("blur", create_proxy(update_name))
             name_input.addEventListener("keyup", create_proxy(lambda e: e.key == 'Enter' and update_name(e)))
         else:
-            # Name Span
             text = document.createElement("span")
             text.textContent = name
             text.className = "flex-1 truncate"
 
-            # Format Selector (visible when "Use same format for all images" is unchecked)
             format_select = document.createElement("select")
             format_select.className = "px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
             for fmt in formats:
@@ -686,23 +504,20 @@ async def main():
                 option.value = fmt
                 option.textContent = fmt
                 format_select.appendChild(option)
-            format_select.value = document.getElementById("format-select").value  # Default to global format
-            item_data['format_select'] = format_select  # Store for later use
+            format_select.value = document.getElementById("format-select").value
+            item_data['format_select'] = format_select
 
-            # Initialize visibility based on checkbox
             apply_to_all = document.getElementById("apply-to-all-checkbox").checked
             if apply_to_all:
                 format_select.style.display = "none"
             else:
                 format_select.style.display = "block"
 
-            # Convert Button for individual conversion
             convert_btn = document.createElement("button")
             convert_btn.innerHTML = '<img src="convert.svg" alt="Convert" class="w-5 h-5"> Convert'
             convert_btn.className = "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition cursor-pointer text-center font-bold text-base individual-convert-button"
             convert_btn.onclick = create_proxy(lambda e, item_data=item_data: handle_convert_click(e, item_data))
 
-            # Append Elements in order
             thumbnail_item.appendChild(remove_btn)
             thumbnail_item.appendChild(img)
             thumbnail_item.appendChild(text)
@@ -724,7 +539,6 @@ async def main():
             update_download_button_visibility()
 
     def generate_unique_name(base_name):
-        # Extract name and extension
         if '.' in base_name:
             name, ext = base_name.rsplit('.', 1)
             ext = '.' + ext
@@ -732,14 +546,10 @@ async def main():
             name = base_name
             ext = ''
 
-        # Collect all names in converted_items
         existing_names = [item['name'] for item in converted_items]
-
-        # If base_name not in existing, return it
         if base_name not in existing_names:
             return base_name
 
-        # Else, find the smallest available number
         i = 1
         while True:
             new_name = f"{name}({i}){ext}"
@@ -748,17 +558,15 @@ async def main():
             i += 1
 
     async def convert_images(event):
-        if not items:
+        if len(items) < 2:
             return
 
         apply_to_all = document.getElementById("apply-to-all-checkbox").checked
         global_format = document.getElementById("format-select").value
-
-        # Show spinner during conversion
         spinner = document.querySelector('.spinner-container')
         spinner.classList.remove('hidden')
 
-        for item in list(items):  # Use a copy to avoid modification during iteration
+        for item in list(items):
             if item["type"] == "file":
                 array_buffer = await item["data"].arrayBuffer()
                 byte_data = bytes(array_buffer.to_py())
@@ -770,8 +578,6 @@ async def main():
                 img = img.convert("RGBA")
 
             output_io = io.BytesIO()
-
-            # Determine format
             if apply_to_all:
                 selected_format = global_format
             else:
@@ -789,18 +595,13 @@ async def main():
 
             converted_blob = Blob.new([Uint8Array.from_(output_io.read())], {"type": f"image/{selected_format.lower()}"})
             blob_url = URL.createObjectURL(converted_blob)
-
-            # Create a new item_data for the converted item
             converted_item_data = {"name": unique_download_name, "data": output_io.getvalue()}
             display_thumbnail(blob_url, unique_download_name, converted_list, converted_item_data, is_converted=True)
 
-        # Hide spinner after conversion
         spinner.classList.add('hidden')
-
         update_download_button_visibility()
 
     def handle_convert_click(event, item_data):
-        # Schedule the coroutine to convert the single image
         asyncio.ensure_future(convert_single_image(item_data))
 
     async def convert_single_image(item_data):
@@ -818,8 +619,6 @@ async def main():
             img = img.convert("RGBA")
 
         output_io = io.BytesIO()
-
-        # Determine format
         apply_to_all = document.getElementById("apply-to-all-checkbox").checked
         if apply_to_all:
             selected_format = document.getElementById("format-select").value
@@ -838,23 +637,18 @@ async def main():
 
         converted_blob = Blob.new([Uint8Array.from_(output_io.read())], {"type": f"image/{selected_format.lower()}"})
         blob_url = URL.createObjectURL(converted_blob)
-
-        # Create a new item_data for the converted item
         converted_item_data = {"name": unique_download_name, "data": output_io.getvalue()}
         display_thumbnail(blob_url, unique_download_name, converted_list, converted_item_data, is_converted=True)
-
-        # Update download button visibility
         update_download_button_visibility()
 
     def download_all(event):
-        if not converted_items:
+        if len(converted_items) < 2:
             return
 
         zip_io = io.BytesIO()
         with zipfile.ZipFile(zip_io, mode="w", compression=zipfile.ZIP_DEFLATED) as zip_file:
             zip_filename_counts = {}
             for item in converted_items:
-                # Use the updated name from the input field
                 base_name = item.get('name', 'untitled')
                 if '.' in base_name:
                     name, ext = base_name.rsplit('.', 1)
@@ -863,7 +657,6 @@ async def main():
                     name = base_name
                     ext = ''
 
-                # Handle duplicate filenames
                 count = zip_filename_counts.get(base_name, 0)
                 if count > 0:
                     new_name = f"{name}({count}){ext}"
@@ -880,19 +673,16 @@ async def main():
         download_link.click()
 
     def remove_all_inputs(event):
-        # Clear all items from input
         items.clear()
         thumbnail_list.innerHTML = ""
         update_convert_button_visibility()
         toggle_format_select()
 
     def remove_all_outputs(event):
-        # Clear all items from output
         converted_items.clear()
         converted_list.innerHTML = ""
         update_download_button_visibility()
 
-    # Event handlers
     document.getElementById("input-file").addEventListener("change", create_proxy(add_file))
     document.getElementById("directory-file").addEventListener("change", create_proxy(add_directory))
     document.getElementById("add-url-button").addEventListener("click", create_proxy(add_url))
@@ -901,16 +691,17 @@ async def main():
     document.getElementById("remove-all-input-button").addEventListener("click", create_proxy(remove_all_inputs))
     document.getElementById("remove-all-output-button").addEventListener("click", create_proxy(remove_all_outputs))
 
-    # Handle Enter key press in URL input
     async def input_url_keydown(event):
         if event.key == 'Enter':
             await add_url(event)
 
     document.getElementById("input-url").addEventListener("keydown", create_proxy(input_url_keydown))
 
-# Schedule the 'main' coroutine
+    update_convert_button_visibility()
+    update_download_button_visibility()
+
 asyncio.ensure_future(main())
 
-    </py-script>
+    </script>
 </body>
 </html>
