@@ -41,6 +41,10 @@
                 600: '#5539cc',
                 700: '#4a32b2',
               },
+              red: {
+                600: '#e53e3e',
+                700: '#c53030',
+              },
             },
           },
         },
@@ -115,6 +119,7 @@
             cursor: pointer;
             transition: background-color 0.3s;
             font-size: 0.875rem;
+            font-weight: bold; /* Make text bold */
         }
 
         .remove-all-button:hover {
@@ -134,6 +139,127 @@
         .spinner-container {
             /* Ensures the spinner is above other elements */
             z-index: 50;
+        }
+
+        /* Convert Button Styling to Match Purple Buttons */
+        .convert-button {
+            background-color: #5539cc; /* Purple-600 */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem; /* Rounded-md */
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.875rem;
+            text-align: center;
+            font-weight: bold; /* Make text bold */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .convert-button:hover {
+            background-color: #4a32b2; /* Purple-700 */
+        }
+
+        .convert-button.hidden {
+            display: none;
+        }
+
+        /* Custom Toggle Switch for "Use same format for all images" */
+        .custom-toggle {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+        .custom-toggle input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .custom-toggle-label {
+            position: absolute;
+            cursor: pointer;
+            inset: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .custom-toggle-label::before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        .custom-toggle input:checked + .custom-toggle-label {
+            background-color: #5539cc; /* Purple when checked */
+        }
+        .custom-toggle input:checked + .custom-toggle-label::before {
+            transform: translateX(26px);
+        }
+
+        /* Upload Button Styling with Icon */
+        .upload-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #5539cc; /* Purple-600 */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem; /* Rounded-md */
+            cursor: pointer;
+            transition: background-color 0.3s;
+            font-size: 0.875rem;
+            font-weight: bold; /* Make text bold */
+        }
+
+        .upload-button:hover {
+            background-color: #4a32b2; /* Purple-700 */
+        }
+
+        .upload-button img {
+            width: 1.25rem; /* w-5 */
+            height: 1.25rem; /* h-5 */
+            /* Removed rotation */
+        }
+
+        /* Download All Button Icon */
+        .download-icon {
+            width: 1.25rem; /* w-5 */
+            height: 1.25rem; /* h-5 */
+            margin-right: 0.5rem; /* mr-2 */
+        }
+
+        /* Add URL Button Bold Text */
+        #add-url-button {
+            font-weight: bold;
+            font-size: 0.875rem; /* Ensure consistent font size */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Ensure Convert and Download All buttons are bold and consistent */
+        #convert-button, #download-all-button {
+            font-weight: bold;
+            font-size: 0.875rem; /* 14px */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Individual Convert Buttons */
+        .individual-convert-button {
+            font-weight: bold;
+            font-size: 0.875rem; /* 14px */
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
     </style>
 
@@ -175,22 +301,38 @@
                     <div class="flex flex-col gap-4">
                         <!-- File and Directory Input -->
                         <div class="flex flex-col sm:flex-row gap-2">
-                            <label for="input-file" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded cursor-pointer transition text-center sm:text-left">Upload Images</label>
+                            <label for="input-file" class="upload-button">
+                                <!-- Upload Icon (up-img.svg) -->
+                                <img src="up-img.svg" alt="Upload Images" class="w-5 h-5">
+                                Upload Images
+                            </label>
                             <input type="file" id="input-file" accept="image/*" multiple class="hidden">
                             
-                            <label for="directory-file" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded cursor-pointer transition text-center sm:text-left">Upload Folder</label>
+                            <label for="directory-file" class="upload-button">
+                                <!-- Upload Icon (up-folder.svg) -->
+                                <img src="up-folder.svg" alt="Upload Folder" class="w-5 h-5">
+                                Upload Folder
+                            </label>
                             <input type="file" id="directory-file" accept="image/*" webkitdirectory class="hidden">
                         </div>
                         <!-- URL Input -->
                         <div class="flex flex-col sm:flex-row gap-2">
                             <input type="text" id="input-url" placeholder="Enter image URL" class="flex-1 px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-                            <button id="add-url-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition w-full sm:w-auto">Add URL</button>
+                            <button id="add-url-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition w-full sm:w-auto">
+                                <!-- URL Icon -->
+                                <img src="url.svg" alt="Add URL" class="w-5 h-5">
+                                Add URL
+                            </button>
                         </div>
                         <!-- Apply to All Checkbox and Global Format Selector -->
                         <div class="flex flex-col sm:flex-row items-center gap-2 mt-2">
+                            <!-- Custom Tailwind Checkbox -->
                             <div class="flex items-center">
-                                <input type="checkbox" id="apply-to-all-checkbox" class="mr-2" checked>
-                                <label for="apply-to-all-checkbox" class="select-none">Use same format for all images</label>
+                                <div class="custom-toggle">
+                                    <input type="checkbox" id="apply-to-all-checkbox" class="hidden" checked>
+                                    <label for="apply-to-all-checkbox" class="custom-toggle-label"></label>
+                                </div>
+                                <label for="apply-to-all-checkbox" class="ml-3 select-none text-gray-700 dark:text-gray-300">Use same format for all images</label>
                             </div>
                             <div class="flex-1">
                                 <label for="format-select" class="sr-only">Select Global Format</label>
@@ -213,7 +355,11 @@
                             <button id="remove-all-input-button" class="remove-all-button hidden">
                                 &#10005; Remove All
                             </button>
-                            <button id="convert-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition w-full sm:w-auto hidden">Convert All</button>
+                            <button id="convert-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition w-full sm:w-auto hidden font-bold text-base">
+                                <!-- Convert Icon -->
+                                <img src="convert.svg" alt="Convert All" class="w-5 h-5">
+                                Convert All
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -234,7 +380,11 @@
                     <button id="remove-all-output-button" class="remove-all-button hidden">
                         &#10005; Remove All
                     </button>
-                    <button id="download-all-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded mt-2 sm:mt-0 hidden transition w-full sm:w-auto">Download All</button>
+                    <button id="download-all-button" class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded mt-2 sm:mt-0 hidden transition w-full sm:w-auto flex items-center font-bold text-base">
+                        <!-- Download Icon -->
+                        <img src="download-button.svg" alt="Download All" class="download-icon">
+                        Download All
+                    </button>
                 </div>
             </div>
         </div>
@@ -246,7 +396,7 @@
         <ol class="list-decimal list-inside text-left space-y-2">
             <li><strong class="text-purple-600">Select Images:</strong> Click on "Upload Images" or "Upload Folder" to upload images from your device. Alternatively, enter an image URL to add images from the web.</li>
             <li><strong class="text-purple-600">Choose Format:</strong> By default, the selected format will apply to all images. Uncheck "Use same format for all images" to set individual formats.</li>
-            <li><strong class="text-purple-600">Convert Images:</strong> Click "Convert All" to start the conversion process.</li>
+            <li><strong class="text-purple-600">Convert Images:</strong> Click "Convert All" to start the conversion process or use individual "Convert" buttons next to each image.</li>
             <li><strong class="text-purple-600">Download:</strong> After conversion, download your images individually or as a ZIP file.</li>
         </ol>
     </section>
@@ -313,7 +463,7 @@ import asyncio
 async def main():
     import io
     import zipfile
-    from js import document, Blob, URL, Uint8Array, console
+    from js import document, Blob, URL, Uint8Array
     import micropip
     from pyodide.http import pyfetch
     from pyodide.ffi import create_proxy
@@ -322,9 +472,7 @@ async def main():
     spinner = document.querySelector('.spinner-container')
 
     # Install Pillow
-    console.log("Loading Pillow...")
     await micropip.install("pillow")
-    console.log("Loaded Pillow.")
 
     from PIL import Image
 
@@ -371,7 +519,7 @@ async def main():
     toggle_format_select()
 
     def update_convert_button_visibility():
-        if items:
+        if len(items) > 1:
             document.getElementById("convert-button").classList.remove('hidden')
             document.getElementById("remove-all-input-button").classList.remove('hidden')
         else:
@@ -379,7 +527,7 @@ async def main():
             document.getElementById("remove-all-input-button").classList.add('hidden')
 
     def update_download_button_visibility():
-        if converted_items:
+        if len(converted_items) > 1:
             document.getElementById("download-all-button").classList.remove('hidden')
             document.getElementById("remove-all-output-button").classList.remove('hidden')
         else:
@@ -444,7 +592,7 @@ async def main():
                 update_convert_button_visibility()
                 toggle_format_select()
             except Exception as e:
-                console.log(f"Failed to fetch image from URL: {url}, error: {e}")
+                pass  # You can handle errors here if desired
 
     def display_thumbnail(src, name, container, item_data, is_converted=False):
         thumbnail_item = document.createElement("div")
@@ -493,11 +641,11 @@ async def main():
             name_container.appendChild(name_input)
             name_container.appendChild(extension_span)
 
-            # Save Icon
+            # Save Icon with download.svg
             save_link = document.createElement("a")
             save_link.href = src
             save_link.download = unique_download_name
-            save_link.innerHTML = "&#128190;"  # Floppy disk symbol
+            save_link.innerHTML = '<img src="download.svg" alt="Download" class="w-5 h-5">'
             save_link.className = "text-green-500 hover:text-green-700 text-xl ml-2"
             item_data['save_link'] = save_link  # Store reference for later use
 
@@ -548,11 +696,18 @@ async def main():
             else:
                 format_select.style.display = "block"
 
+            # Convert Button for individual conversion
+            convert_btn = document.createElement("button")
+            convert_btn.innerHTML = '<img src="convert.svg" alt="Convert" class="w-5 h-5"> Convert'
+            convert_btn.className = "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition cursor-pointer text-center font-bold text-base individual-convert-button"
+            convert_btn.onclick = create_proxy(lambda e, item_data=item_data: handle_convert_click(e, item_data))
+
             # Append Elements in order
             thumbnail_item.appendChild(remove_btn)
             thumbnail_item.appendChild(img)
             thumbnail_item.appendChild(text)
             thumbnail_item.appendChild(format_select)
+            thumbnail_item.appendChild(convert_btn)
             container.appendChild(thumbnail_item)
 
     def remove_image(item_data, container, thumbnail_item):
@@ -594,7 +749,6 @@ async def main():
 
     async def convert_images(event):
         if not items:
-            console.log("No images to convert.")
             return
 
         apply_to_all = document.getElementById("apply-to-all-checkbox").checked
@@ -604,7 +758,7 @@ async def main():
         spinner = document.querySelector('.spinner-container')
         spinner.classList.remove('hidden')
 
-        for item in items:
+        for item in list(items):  # Use a copy to avoid modification during iteration
             if item["type"] == "file":
                 array_buffer = await item["data"].arrayBuffer()
                 byte_data = bytes(array_buffer.to_py())
@@ -645,9 +799,55 @@ async def main():
 
         update_download_button_visibility()
 
+    def handle_convert_click(event, item_data):
+        # Schedule the coroutine to convert the single image
+        asyncio.ensure_future(convert_single_image(item_data))
+
+    async def convert_single_image(item_data):
+        if item_data in converted_items:
+            return
+
+        if item_data["type"] == "file":
+            array_buffer = await item_data["data"].arrayBuffer()
+            byte_data = bytes(array_buffer.to_py())
+        else:
+            byte_data = item_data["data"]
+
+        img = Image.open(io.BytesIO(byte_data))
+        if img.mode == "P":
+            img = img.convert("RGBA")
+
+        output_io = io.BytesIO()
+
+        # Determine format
+        apply_to_all = document.getElementById("apply-to-all-checkbox").checked
+        if apply_to_all:
+            selected_format = document.getElementById("format-select").value
+        else:
+            selected_format = item_data['format_select'].value
+
+        if selected_format == "JPEG":
+            img = img.convert("RGB")
+        img.save(output_io, format=selected_format)
+        output_io.seek(0)
+
+        original_name = item_data["name"].rsplit(".", 1)[0]
+        extension = f".{selected_format.lower()}"
+        base_download_name = f"{original_name}{extension}"
+        unique_download_name = generate_unique_name(base_download_name)
+
+        converted_blob = Blob.new([Uint8Array.from_(output_io.read())], {"type": f"image/{selected_format.lower()}"})
+        blob_url = URL.createObjectURL(converted_blob)
+
+        # Create a new item_data for the converted item
+        converted_item_data = {"name": unique_download_name, "data": output_io.getvalue()}
+        display_thumbnail(blob_url, unique_download_name, converted_list, converted_item_data, is_converted=True)
+
+        # Update download button visibility
+        update_download_button_visibility()
+
     def download_all(event):
         if not converted_items:
-            console.log("No converted images to download.")
             return
 
         zip_io = io.BytesIO()
