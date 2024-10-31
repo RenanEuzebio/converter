@@ -428,11 +428,14 @@ async def main():
             try:
                 response = await pyfetch(url)
                 byte_data = await response.bytes()
+                item_name = url.split("/")[-1] or "image"
+                if not any(c in item_name for c in ('?', '#')):
+                    item_name = item_name.split('?')[0].split('#')[0]
                 item_data = {
                     "type": "url",
                     "data": byte_data,
                     "src": url,
-                    "name": url.split("/")[-1] or "image",
+                    "name": item_name,
                     "format": None
                 }
                 items.append(item_data)
@@ -468,6 +471,10 @@ async def main():
                 basename = name
                 extension = ''
 
+            # Generate a unique name by appending (1), (2), etc., if necessary
+            base_download_name = f"{basename}{extension}"
+            unique_download_name = generate_unique_name(base_download_name)
+
             # Input for basename
             name_input = document.createElement("input")
             name_input.type = "text"
@@ -489,7 +496,7 @@ async def main():
             # Save Icon
             save_link = document.createElement("a")
             save_link.href = src
-            save_link.download = name
+            save_link.download = unique_download_name
             save_link.innerHTML = "&#128190;"  # Floppy disk symbol
             save_link.className = "text-green-500 hover:text-green-700 text-xl ml-2"
             item_data['save_link'] = save_link  # Store reference for later use
@@ -510,8 +517,9 @@ async def main():
                     name_input.value = new_basename
                 item_data['basename'] = new_basename
                 new_download_name = f"{new_basename}{extension}"
-                save_link.download = new_download_name
-                item_data['name'] = new_download_name  # Update the name in item_data
+                unique_new_download_name = generate_unique_name(new_download_name)
+                save_link.download = unique_new_download_name
+                item_data['name'] = unique_new_download_name  # Update the name in item_data
 
             name_input.addEventListener("change", create_proxy(update_name))
             name_input.addEventListener("blur", create_proxy(update_name))
@@ -560,13 +568,34 @@ async def main():
             container.removeChild(thumbnail_item)
             update_download_button_visibility()
 
+    def generate_unique_name(base_name):
+        # Extract name and extension
+        if '.' in base_name:
+            name, ext = base_name.rsplit('.', 1)
+            ext = '.' + ext
+        else:
+            name = base_name
+            ext = ''
+
+        # Collect all names in converted_items
+        existing_names = [item['name'] for item in converted_items]
+
+        # If base_name not in existing, return it
+        if base_name not in existing_names:
+            return base_name
+
+        # Else, find the smallest available number
+        i = 1
+        while True:
+            new_name = f"{name}({i}){ext}"
+            if new_name not in existing_names:
+                return new_name
+            i += 1
+
     async def convert_images(event):
         if not items:
             console.log("No images to convert.")
             return
-
-        converted_list.innerHTML = ""
-        converted_items.clear()
 
         apply_to_all = document.getElementById("apply-to-all-checkbox").checked
         global_format = document.getElementById("format-select").value
@@ -600,14 +629,16 @@ async def main():
             output_io.seek(0)
 
             original_name = item["name"].rsplit(".", 1)[0]
-            download_name = f"{original_name}.{selected_format.lower()}"
+            extension = f".{selected_format.lower()}"
+            base_download_name = f"{original_name}{extension}"
+            unique_download_name = generate_unique_name(base_download_name)
 
             converted_blob = Blob.new([Uint8Array.from_(output_io.read())], {"type": f"image/{selected_format.lower()}"})
             blob_url = URL.createObjectURL(converted_blob)
 
             # Create a new item_data for the converted item
-            converted_item_data = {"name": download_name, "data": output_io.getvalue()}
-            display_thumbnail(blob_url, download_name, converted_list, converted_item_data, is_converted=True)
+            converted_item_data = {"name": unique_download_name, "data": output_io.getvalue()}
+            display_thumbnail(blob_url, unique_download_name, converted_list, converted_item_data, is_converted=True)
 
         # Hide spinner after conversion
         spinner.classList.add('hidden')
@@ -621,7 +652,7 @@ async def main():
 
         zip_io = io.BytesIO()
         with zipfile.ZipFile(zip_io, mode="w", compression=zipfile.ZIP_DEFLATED) as zip_file:
-            filename_counts = {}
+            zip_filename_counts = {}
             for item in converted_items:
                 # Use the updated name from the input field
                 base_name = item.get('name', 'untitled')
@@ -633,12 +664,12 @@ async def main():
                     ext = ''
 
                 # Handle duplicate filenames
-                count = filename_counts.get(base_name, 0)
+                count = zip_filename_counts.get(base_name, 0)
                 if count > 0:
                     new_name = f"{name}({count}){ext}"
                 else:
                     new_name = base_name
-                filename_counts[base_name] = count + 1
+                zip_filename_counts[base_name] = count + 1
 
                 zip_file.writestr(new_name, item['data'])
         zip_blob = Blob.new([Uint8Array.from_(zip_io.getvalue())], {"type": "application/zip"})
@@ -679,6 +710,7 @@ async def main():
 
 # Schedule the 'main' coroutine
 asyncio.ensure_future(main())
+
     </py-script>
 </body>
 </html>
