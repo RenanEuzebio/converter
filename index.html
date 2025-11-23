@@ -1,708 +1,663 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- Basic Meta Tags -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Online Image Format Converter | Morpha.app</title>
-    <meta name="description" content="Easily convert images to formats like JPEG, PNG, WEBP, and more with Morpha.app's free online Image Format Converter. No downloads or ads required.">
-    <meta name="robots" content="index, follow">
-    <link rel="canonical" href="https://morpha.app/">
-    <link rel="icon" href="m.svg" type="image/svg+xml">
-
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:title" content="Free Online Image Format Converter | Morpha.app">
-    <meta property="og:description" content="Easily convert images to formats like JPEG, PNG, WEBP, and more with Morpha.app's free online Image Format Converter. No downloads or ads required.">
-    <meta property="og:image" content="https://morpha.app/morpha.svg">
-    <meta property="og:url" content="https://morpha.app/">
-    <meta property="og:type" content="website">
-
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="Free Online Image Format Converter | Morpha.app">
-    <meta name="twitter:description" content="Easily convert images to formats like JPEG, PNG, WEBP, and more with Morpha.app's free online Image Format Converter. No downloads or ads required.">
-    <meta name="twitter:image" content="https://morpha.app/morpha.svg">
-
-    <!-- Include PyScript CSS and JS (Latest Version) -->
+    <title>Image Converter | Morpha</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.css">
     <script type="module" src="https://cdn.jsdelivr.net/npm/@pyscript/core/dist/core.js"></script>
 
-    <!-- Include Tailwind CSS via Official CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- Tailwind CSS Configuration -->
     <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              purple: {
-                600: '#5539cc',
-                700: '#4a32b2',
-              },
-              red: {
-                600: '#e53e3e',
-                700: '#c53030',
-              },
-            },
-          },
-        },
-      }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'system-ui', '-apple-system', 'sans-serif'],
+                    },
+                    colors: {
+                        surface: '#f8fafc',
+                        'surface-panel': '#ffffff',
+                        primary: '#4f46e5', // Indigo 600
+                        'primary-hover': '#4338ca', // Indigo 700
+                        error: '#ef4444',
+                    },
+                    boxShadow: {
+                        'soft': '0 4px 20px -2px rgba(0, 0, 0, 0.05)',
+                    }
+                }
+            }
+        }
     </script>
 
-    <!-- Custom Styles (for Toggle Switch and Custom Shadow) -->
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    
+    <script src="https://unpkg.com/lucide@latest"></script>
+
     <style>
-        /* General Button Styling */
-        .button {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 1rem;
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        .button-purple {
-            background-color: #5539cc;
-            color: white;
-        }
-        .button-purple:hover {
-            background-color: #4a32b2;
-        }
-        .button-red {
-            background-color: #e53e3e;
-            color: white;
-        }
-        .button-red:hover {
-            background-color: #c53030;
-        }
-
-        /* Dark Mode Toggle Switch */
-        .toggle-switch {
-            position: relative;
-            display: inline-block;
-            width: 60px;
-            height: 34px;
-        }
-        .toggle-switch input {
-            opacity: 0;
-            width: 0;
-            height: 0;
-        }
-        .switch-label {
-            position: absolute;
-            cursor: pointer;
-            inset: 0;
-            background-color: #ccc;
-            transition: .4s;
-            border-radius: 34px;
-        }
-        .switch-label::before {
-            position: absolute;
-            content: "";
-            height: 26px;
-            width: 26px;
-            left: 4px;
-            bottom: 4px;
-            background-color: white;
-            transition: .4s;
-            border-radius: 50%;
-        }
-        input:checked + .switch-label {
-            background-color: #5539cc;
-        }
-        input:checked + .switch-label::before {
-            transform: translateX(26px);
-        }
-
-        /* Custom Soft Shadow */
-        .custom-shadow {
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        /* Prevent horizontal overflow */
-        body {
-            overflow-x: hidden;
-        }
+        [x-cloak] { display: none !important; }
+        .custom-scroll::-webkit-scrollbar { width: 5px; }
+        .custom-scroll::-webkit-scrollbar-track { background: transparent; }
+        .custom-scroll::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 10px; }
+        .custom-scroll::-webkit-scrollbar-thumb:hover { background-color: #94a3b8; }
+        
+        /* Hide PyScript Loading Overlay/Terminal */
+        .py-overlay, py-terminal { display: none !important; }
     </style>
-
-    <!-- PyScript Configuration -->
-    <py-config>
-        packages = ["micropip"]
-        splashscreen = false
-        editor = false  <!-- Disable the PyScript editor -->
-    </py-config>
 </head>
-<body class="bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
-    <!-- Header -->
-    <header class="bg-white dark:bg-gray-800 p-4 flex items-center justify-between custom-shadow">
-        <img id="logo" src="morpha.svg" alt="Morpha Logo - Free Online Image Format Converter" class="w-40 h-auto">
-        <!-- Dark Mode Toggle Switch -->
-        <div class="toggle-switch">
-            <input type="checkbox" class="checkbox" id="dark-mode-toggle-checkbox">
-            <label for="dark-mode-toggle-checkbox" class="switch-label"></label>
+
+<body x-data="imageConverter()" x-init="initApp()" 
+      @dragover.prevent="isDragging = true"
+      class="bg-surface text-slate-900 font-sans h-screen overflow-hidden selection:bg-indigo-100 selection:text-indigo-800 relative">
+
+    <script type="py" config='{"packages":["pillow"]}'>
+    </script>
+
+    <script type="py">
+        import io
+        from PIL import Image
+        from js import Uint8Array, window
+        import pyodide.ffi
+
+        def convert_image_py(data_proxy, format_str):
+            """
+            Hybrid Engine Backend:
+            Receives Uint8Array from JS -> Converts via Pillow -> Returns Uint8Array to JS.
+            """
+            try:
+                # 1. Convert JS Proxy to Python Bytes
+                input_bytes = data_proxy.to_py()
+                
+                # 2. Open Image in Memory
+                img = Image.open(io.BytesIO(input_bytes))
+                
+                # 3. Handle Palette/Transparency (Fixes broken GIFs/PNGs converting to non-alpha formats)
+                if img.mode == "P":
+                    img = img.convert("RGBA")
+                
+                # 4. Handle JPEG specific (Remove Alpha Channel)
+                if format_str == "JPEG":
+                    img = img.convert("RGB")
+                
+                # 5. Convert
+                output_io = io.BytesIO()
+                img.save(output_io, format=format_str)
+                output_io.seek(0)
+                
+                # 6. Return raw bytes back to JS to create the Blob there
+                return Uint8Array.from_(output_io.read())
+                
+            except Exception as e:
+                print(f"PYTHON ERROR: {e}")
+                return None
+
+        # Expose to Browser Window
+        window.convertImagePy = convert_image_py
+        window.pythonEngineReady = True
+    </script>
+
+    <div x-show="isDragging" 
+         x-transition.opacity 
+         @dragleave.prevent="isDragging = false"
+         @drop.prevent="handleDrop($event)"
+         class="fixed inset-0 z-[100] bg-indigo-600/90 backdrop-blur-sm border-[6px] border-white/20 m-4 rounded-[32px] flex items-center justify-center"
+         x-cloak>
+        <div class="bg-white p-10 rounded-[32px] shadow-2xl flex flex-col items-center animate-bounce pointer-events-none">
+            <div class="bg-indigo-100 p-5 rounded-full mb-5">
+                <i data-lucide="download-cloud" class="w-12 h-12 text-indigo-600"></i>
+            </div>
+            <span class="text-2xl font-bold text-slate-800">Drop images here</span>
+            <span class="text-sm text-slate-500 mt-2 font-medium">Add to queue</span>
         </div>
-    </header>
+    </div>
 
-    <!-- Main Content -->
-    <main class="flex flex-col items-center p-4 w-full">
-        <h1 class="text-3xl font-bold text-center my-4">Free Online Image Format Converter</h1>
-        <p class="text-center text-gray-600 dark:text-gray-300 mt-2 max-w-2xl">Convert your images to various formats quickly and effortlessly.</p>
+    <div class="h-full flex flex-col max-w-7xl mx-auto p-4 lg:p-6 gap-4 lg:gap-6 relative z-10">
 
-        <div class="mt-6 w-full px-4 sm:px-0"></div>
+        <header class="flex items-center justify-between shrink-0 py-1">
+            <div class="flex items-center gap-4">
+                <div class="w-[100px] h-[100px] flex items-center justify-center shrink-0">
+                    <img src="src/svg/morpha.svg" alt="Morpha Logo" class="w-full h-full object-contain">
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight text-slate-900">Image Converter</h1>
+                </div>
+            </div>
+            <div class="hidden md:flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm">
+                <div class="flex items-center gap-2 mr-4 border-r border-slate-200 pr-4">
+                    <span class="relative flex h-2.5 w-2.5">
+                      <span x-show="!pythonReady" class="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                      <span :class="pythonReady ? 'bg-green-500' : 'bg-orange-500'" class="relative inline-flex rounded-full h-2.5 w-2.5"></span>
+                    </span>
+                    <span class="text-xs font-medium text-slate-500" x-text="pythonReady ? 'Engine Ready' : 'Loading Engine...'"></span>
+                </div>
+                
+                <i data-lucide="shield-check" class="w-4 h-4 text-green-600"></i>
+                <span class="text-xs text-slate-600 font-medium">All processing is done locally in your browser.</span>
+            </div>
+        </header>
 
-        <div class="flex flex-wrap justify-center gap-8 w-full max-w-6xl">
-            <!-- Image Input Container -->
-            <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-md relative custom-shadow rounded-xl">
-                <h2 class="text-2xl font-semibold mb-4">Image Input</h2>
-                <div class="input-content">
-                    <div class="flex flex-col gap-4">
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <label for="input-file" class="button button-purple">
-                                <img src="up-img.svg" alt="Add Images" class="w-5 h-5">Add Images
-                            </label>
-                            <input type="file" id="input-file" accept="image/*" multiple class="hidden">
-                            
-                            <label for="directory-file" class="button button-purple">
-                                <img src="up-folder.svg" alt="Add Folder" class="w-5 h-5">Add Folder
-                            </label>
-                            <input type="file" id="directory-file" accept="image/*" webkitdirectory class="hidden">
+        <section class="shrink-0 grid grid-cols-1 md:grid-cols-4 gap-4">
+            <button @click="$refs.fileInput.click()" class="group relative flex flex-col items-center justify-center gap-3 p-5 bg-white hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 text-center h-full">
+                <div class="w-12 h-12 rounded-full bg-indigo-50 group-hover:bg-white shadow-sm flex items-center justify-center text-indigo-600 transition-colors">
+                    <i data-lucide="image-plus" class="w-6 h-6"></i>
+                </div>
+                <div class="flex flex-col gap-0.5">
+                    <span class="text-sm font-semibold text-slate-800">Select Images</span>
+                    <span class="text-[11px] text-slate-500 font-medium">All Standard Formats</span>
+                </div>
+                <input x-ref="fileInput" type="file" accept="image/*" multiple hidden @change="handleFiles($event.target.files)">
+            </button>
+
+            <button @click="$refs.folderInput.click()" class="group relative flex flex-col items-center justify-center gap-3 p-5 bg-white hover:bg-indigo-50/50 border border-slate-200 hover:border-indigo-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-200 text-center h-full">
+                <div class="w-12 h-12 rounded-full bg-indigo-50 group-hover:bg-white shadow-sm flex items-center justify-center text-indigo-600 transition-colors">
+                    <i data-lucide="folder-input" class="w-6 h-6"></i>
+                </div>
+                <div class="flex flex-col gap-0.5">
+                    <span class="text-sm font-semibold text-slate-800">Select Folder</span>
+                    <span class="text-[11px] text-slate-500 font-medium">Recursive Import</span>
+                </div>
+                <input x-ref="folderInput" type="file" webkitdirectory directory hidden @change="handleFiles($event.target.files, 'folder')">
+            </button>
+
+            <div class="md:col-span-2 flex flex-col h-full bg-white border border-slate-200 rounded-2xl shadow-sm p-4 gap-4">
+                <div class="h-12 bg-slate-50 rounded-xl border border-slate-200 flex items-center p-1 gap-2 focus-within:border-indigo-500 focus-within:bg-white transition-all shrink-0">
+                    <div class="pl-3 text-slate-400">
+                        <i data-lucide="link" class="w-5 h-5"></i>
+                    </div>
+                    <input type="text" x-model="urlInput" autocomplete="off" spellcheck="false" @keydown.enter="addUrl()" placeholder="Paste image URL here..." class="flex-1 bg-transparent border-none outline-none focus:ring-0 focus:outline-none text-sm text-slate-800 placeholder:text-slate-400 font-medium h-full">
+                    <button @click="addUrl()" class="h-full px-5 bg-slate-900 hover:bg-primary text-white text-xs font-bold uppercase tracking-wide rounded-lg shadow transition-colors flex items-center gap-2">
+                        Fetch
+                    </button>
+                </div>
+
+                <div class="flex-1 flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50 hover:bg-indigo-50/30 hover:border-indigo-200 transition-colors p-2 text-center group">
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs font-semibold text-slate-500 group-hover:text-indigo-600 transition-colors">Paste the image here</span>
+                        <button @click="pasteFromClipboard()" class="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-slate-200 hover:border-indigo-300 hover:text-indigo-600 text-slate-600 text-xs font-bold rounded-full shadow-sm transition-all active:scale-95">
+                            <i data-lucide="clipboard-paste" class="w-3.5 h-3.5"></i>
+                            Clipboard
+                        </button>
+                    </div>
+                    <span class="text-[11px] text-slate-400 font-medium">or drag and drop your images anywhere on screen...</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="shrink-0 flex flex-wrap items-center justify-between gap-4 px-1">
+            <div class="flex items-center gap-3 bg-white border border-slate-200 p-1.5 pr-4 rounded-full shadow-sm">
+                <span class="bg-slate-100 px-3 py-1.5 rounded-full text-xs font-semibold text-slate-700 border border-slate-200">Global Output Format</span>
+                <select x-model="globalFormat" class="bg-transparent border-none text-sm font-semibold text-slate-800 focus:ring-0 cursor-pointer py-1 pl-2 pr-8 outline-none">
+                    <optgroup label="Web Standard (Fast)">
+                        <option value="JPEG">JPEG</option>
+                        <option value="PNG">PNG</option>
+                        <option value="WEBP">WebP</option>
+                    </optgroup>
+                    <optgroup label="Advanced (Python)">
+                        <option value="BMP">BMP</option>
+                        <option value="TIFF">TIFF</option>
+                        <option value="ICO">ICO</option>
+                        <option value="PPM">PPM</option>
+                        <option value="TGA">TGA</option>
+                    </optgroup>
+                </select>
+            </div>
+        </section>
+
+        <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 min-h-0">
+            
+            <div class="flex flex-col bg-white border border-slate-200 rounded-[20px] shadow-soft overflow-hidden">
+                <div class="p-4 flex items-center justify-between border-b border-slate-100">
+                    <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        Input Queue
+                        <span x-show="queue.length > 0" class="bg-slate-100 border border-slate-200 text-slate-600 text-[10px] px-2 py-0.5 rounded-full font-mono" x-text="queue.length"></span>
+                    </h2>
+                    <div class="flex gap-2">
+                        <button x-show="queue.length" @click="clearQueue()" class="flex items-center gap-2 px-3 py-2 hover:bg-red-50 text-red-600 text-xs font-semibold rounded-lg transition-colors group" title="Clear All">
+                            <i data-lucide="trash-2" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                            Remove All
+                        </button>
+                        <button x-show="queue.length" @click="convertAll()" class="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary-hover text-white text-sm font-medium rounded-lg shadow-md shadow-indigo-200 transition-all active:scale-95">
+                            <i data-lucide="zap" class="w-5 h-5"></i>
+                            Convert All
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto custom-scroll p-3 space-y-2 bg-slate-50/50">
+                    <div x-show="queue.length === 0" class="h-full flex flex-col items-center justify-center text-slate-400 gap-4 min-h-[200px]">
+                        <div class="w-20 h-20 rounded-3xl bg-slate-100 border border-slate-200 flex items-center justify-center">
+                            <i data-lucide="image" class="w-10 h-10 opacity-40"></i>
                         </div>
+                        <p class="text-sm font-medium text-slate-500">No images selected</p>
+                    </div>
 
-                        <div class="flex flex-col sm:flex-row gap-2">
-                            <input type="text" id="input-url" placeholder="Enter image URL" class="flex-1 px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600">
-                            <button id="add-url-button" class="button button-purple">
-                                <img src="url.svg" alt="Add URL" class="w-5 h-5">Add URL
+                    <template x-for="item in queue" :key="item.id">
+                        <div class="group bg-white border border-slate-200 p-2 rounded-xl flex items-center gap-3 shadow-sm">
+                            <button @click="removeQueueItem(item.id)" class="w-10 h-10 shrink-0 flex items-center justify-center rounded-lg hover:bg-red-50 text-slate-400 hover:text-error transition-colors">
+                                <i data-lucide="x" class="w-5 h-5"></i>
                             </button>
-                        </div>
-
-                        <div class="flex flex-col sm:flex-row items-center gap-2 mt-2">
-                            <div class="flex items-center">
-                                <div class="toggle-switch">
-                                    <input type="checkbox" id="apply-to-all-checkbox" class="hidden" checked>
-                                    <label for="apply-to-all-checkbox" class="switch-label"></label>
+                            <div class="w-12 h-12 shrink-0 bg-slate-100 rounded-lg overflow-hidden relative border border-slate-200">
+                                <img :src="item.url" class="w-full h-full object-cover">
+                                <div x-show="item.isProcessing" class="absolute inset-0 bg-black/40 flex items-center justify-center backdrop-blur-[1px]">
+                                    <i data-lucide="loader-2" class="w-5 h-5 text-white animate-spin"></i>
                                 </div>
-                                <label for="apply-to-all-checkbox" class="ml-3 select-none text-gray-700 dark:text-gray-300">Use same format for all images</label>
                             </div>
-                            <div class="flex-1">
-                                <label for="format-select" class="sr-only">Select Global Format</label>
-                                <select id="format-select" class="w-full px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600">
+                            <div class="flex-1 min-w-0 mr-2 relative">
+                                <div class="inline-grid items-center justify-start max-w-[7rem] sm:max-w-[10rem] overflow-hidden">
+                                    <span class="col-start-1 row-start-1 opacity-0 pointer-events-none whitespace-pre px-1 font-bold text-sm" x-text="item.baseName"></span>
+                                    <input type="text" x-model="item.baseName" autocomplete="off" spellcheck="false" class="col-start-1 row-start-1 w-full min-w-[2rem] bg-transparent border-b-2 border-transparent hover:border-slate-200 focus:border-primary focus:outline-none text-sm font-bold text-slate-800 px-1 pb-0.5 transition-colors placeholder-slate-300 truncate" placeholder="Name">
+                                </div>
+                                <div class="flex items-center gap-2 text-[11px] text-slate-500 mt-1 pl-1">
+                                    <span class="font-medium" x-text="formatBytes(item.size)"></span>
+                                    <span class="text-slate-300">|</span>
+                                    <span class="shrink-0 bg-slate-100 border border-slate-200 text-slate-600 text-[10px] px-1.5 py-0.5 rounded font-mono lowercase" x-text="item.ext"></span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 pl-2 border-l border-slate-100 shrink-0">
+                                <select x-model="item.targetFormat" class="w-[4.5rem] bg-slate-50 hover:bg-slate-100 border border-transparent text-[11px] font-bold text-slate-600 rounded-lg py-1.5 pl-1 focus:ring-0 cursor-pointer transition-colors outline-none">
+                                    <option value="global">Global</option>
                                     <option value="JPEG">JPEG</option>
                                     <option value="PNG">PNG</option>
-                                    <option value="WEBP">WEBP</option>
+                                    <option value="WEBP">WebP</option>
                                     <option value="BMP">BMP</option>
                                     <option value="TIFF">TIFF</option>
                                     <option value="ICO">ICO</option>
-                                    <option value="PPM">PPM</option>
-                                    <option value="TGA">TGA</option>
                                 </select>
+                                <button @click="convertItem(item)" :disabled="item.isProcessing" class="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-indigo-50 text-indigo-600 hover:bg-indigo-600 hover:text-white disabled:opacity-50 disabled:hover:bg-indigo-50 disabled:hover:text-indigo-600 transition-all">
+                                    <i data-lucide="play" class="w-5 h-5 fill-current"></i>
+                                </button>
                             </div>
                         </div>
+                    </template>
+                </div>
+            </div>
 
-                        <div class="mt-4 max-h-48 overflow-y-auto" id="thumbnail-list"></div>
-                        <div class="flex flex-col sm:flex-row gap-2 mt-4 items-center">
-                            <button id="remove-all-input-button" class="button button-red hidden">
-                                &#10005; Remove All
-                            </button>
-                            <button id="convert-button" class="button button-purple hidden">
-                                <img src="convert.svg" alt="Convert All" class="w-5 h-5">Convert All
-                            </button>
-                        </div>
+            <div class="flex flex-col bg-white border border-slate-200 rounded-[20px] shadow-soft overflow-hidden">
+                <div class="p-4 flex items-center justify-between border-b border-slate-100">
+                    <h2 class="text-sm font-bold text-slate-800 flex items-center gap-2">
+                        Converted
+                        <span x-show="results.length > 0" class="bg-green-50 border border-green-200 text-green-700 text-[10px] px-2 py-0.5 rounded-full font-mono" x-text="results.length"></span>
+                    </h2>
+                    <div class="flex gap-2">
+                         <button x-show="results.length" @click="clearResults()" class="flex items-center gap-2 px-3 py-2 hover:bg-red-50 text-red-600 text-xs font-semibold rounded-lg transition-colors group" title="Clear All">
+                            <i data-lucide="trash-2" class="w-5 h-5 group-hover:scale-110 transition-transform"></i>
+                            Remove All
+                        </button>
+                        <button x-show="results.length" @click="downloadZip()" class="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 text-sm font-medium rounded-lg shadow-sm transition-all">
+                            <i data-lucide="archive" class="w-5 h-5 text-slate-500"></i>
+                            Download ZIP
+                        </button>
                     </div>
                 </div>
-                <div role="status" class="spinner-container absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 dark:bg-gray-800 dark:bg-opacity-75">
-                    <svg aria-hidden="true" class="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-purple-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
-                        <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
-                    </svg>
-                    <span class="sr-only">Loading...</span>
-                </div>
-            </div>
-            
-            <!-- Image Output Container -->
-            <div class="bg-white dark:bg-gray-800 p-6 w-full max-w-md custom-shadow rounded-xl relative">
-                <h2 class="text-2xl font-semibold mb-4">Image Output</h2>
-                <div id="converted-list" class="max-h-64 overflow-y-auto"></div>
-                <div class="flex flex-col sm:flex-row gap-2 mt-4 items-center">
-                    <button id="remove-all-output-button" class="button button-red hidden">
-                        &#10005; Remove All
-                    </button>
-                    <button id="download-all-button" class="button button-purple hidden">
-                        <img src="download-button.svg" alt="Download All" class="w-5 h-5">Download All
-                    </button>
+                
+                <div class="flex-1 overflow-y-auto custom-scroll p-3 space-y-2 bg-slate-50/50">
+                    <div x-show="results.length === 0" class="h-full flex flex-col items-center justify-center text-slate-400 gap-4 min-h-[200px]">
+                        <div class="w-20 h-20 rounded-3xl bg-slate-100 border border-slate-200 flex items-center justify-center">
+                            <i data-lucide="check-circle-2" class="w-10 h-10 opacity-40"></i>
+                        </div>
+                        <p class="text-sm font-medium text-slate-500">Converted images appear here</p>
+                    </div>
+
+                    <template x-for="file in results" :key="file.id">
+                        <div class="group bg-white border border-green-200 p-2 rounded-xl flex items-center gap-3 shadow-sm hover:shadow-md hover:border-green-300 transition-all">
+                            <button @click="removeResult(file.id)" class="w-10 h-10 shrink-0 flex items-center justify-center rounded-lg hover:bg-red-50 text-slate-400 hover:text-error transition-colors">
+                                <i data-lucide="x" class="w-5 h-5"></i>
+                            </button>
+                            <div class="w-12 h-12 shrink-0 bg-white rounded-lg overflow-hidden relative border border-green-200 p-0.5">
+                                <img :src="file.url" class="w-full h-full object-cover rounded-[6px]">
+                                <div class="absolute bottom-0 right-0 bg-green-500 w-4 h-4 rounded-tl-md flex items-center justify-center">
+                                    <i data-lucide="check" class="w-2.5 h-2.5 text-white font-bold"></i>
+                                </div>
+                            </div>
+                            <div class="flex-1 min-w-0 mr-2 relative">
+                                <div class="inline-grid items-center justify-start max-w-[7rem] sm:max-w-[10rem] overflow-hidden">
+                                    <span class="col-start-1 row-start-1 opacity-0 pointer-events-none whitespace-pre px-1 font-bold text-sm" x-text="file.baseName"></span>
+                                    <input type="text" x-model="file.baseName" autocomplete="off" spellcheck="false" class="col-start-1 row-start-1 w-full min-w-[2rem] bg-transparent border-b-2 border-transparent hover:border-green-300 focus:border-green-500 focus:outline-none text-sm font-bold text-slate-800 px-1 pb-0.5 transition-colors placeholder-slate-300 truncate" placeholder="Name">
+                                </div>
+                                <div class="flex items-center gap-2 text-[11px] text-slate-500 mt-1 pl-1">
+                                    <span class="font-medium" x-text="formatBytes(file.blob.size)"></span>
+                                    <span class="text-slate-300">|</span>
+                                    <span class="shrink-0 bg-green-50 border border-green-100 text-green-700 text-[10px] px-1.5 py-0.5 rounded font-mono lowercase" x-text="file.ext"></span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-2 pl-2 border-l border-green-100 shrink-0">
+                                <button @click="downloadItem(file)" title="Download" class="w-9 h-9 shrink-0 flex items-center justify-center rounded-lg bg-white border border-slate-200 hover:border-green-400 text-slate-600 hover:text-green-600 hover:shadow-sm transition-all">
+                                    <i data-lucide="download" class="w-5 h-5"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </template>
                 </div>
             </div>
         </div>
-    </main>
+    </div>
 
-    <!-- Additional Content -->
-    <section class="bg-white dark:bg-gray-800 p-6 max-w-3xl mx-auto mt-8 custom-shadow rounded-xl mb-8">
-        <h2 class="text-2xl font-semibold mb-4 text-center">How to Convert Images</h2>
-        <ol class="list-decimal list-inside text-left space-y-2">
-            <li><strong class="text-purple-600">Select Images:</strong> Click on "Add Images" or "Add Folder" to add images from your device. Alternatively, enter an image URL to add images from the web.</li>
-            <li><strong class="text-purple-600">Choose Format:</strong> By default, the selected format will apply to all images. Uncheck "Use same format for all images" to set individual formats.</li>
-            <li><strong class="text-purple-600">Convert Images:</strong> Click "Convert All" to start the conversion process or use individual "Convert" buttons next to each image.</li>
-            <li><strong class="text-purple-600">Download:</strong> After conversion, download your images individually or as a ZIP file.</li>
-        </ol>
-    </section>
-
-    <!-- FAQ Section -->
-    <section class="bg-white dark:bg-gray-800 p-6 max-w-3xl mx-auto mt-8 custom-shadow rounded-xl mb-8">
-        <h2 class="text-2xl font-semibold mb-4 text-center">Frequently Asked Questions</h2>
-        <div class="space-y-4">
-            <div>
-                <h3 class="text-xl font-semibold text-purple-600">Is the converter free to use?</h3>
-                <p>Yes, our image format converter is completely free with no hidden costs and no ads.</p>
-            </div>
-            <div>
-                <h3 class="text-xl font-semibold text-purple-600">Do I need to register or sign up?</h3>
-                <p>No registration is required. You can convert images instantly.</p>
-            </div>
-            <div>
-                <h3 class="text-xl font-semibold text-purple-600">Is there a limit to the number of images I can convert?</h3>
-                <p>There are no limits. Convert as many images as you need.</p>
-            </div>
-            <div>
-                <h3 class="text-xl font-semibold text-purple-600">Are my images secure?</h3>
-                <p>Your images are not being uploaded to any remote server. All processing is done locally in your browser.</p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Dark Mode Toggle Script -->
     <script>
-        const toggleCheckbox = document.getElementById('dark-mode-toggle-checkbox');
-        const logo = document.getElementById('logo');
-        const prefersDarkScheme = window.matchMedia('(prefers-color-scheme: dark)');
+        function imageConverter() {
+            return {
+                queue: [],      
+                results: [],    
+                urlInput: '',
+                globalFormat: 'JPEG',
+                isDragging: false,
+                pythonReady: false,
+                
+                // Browser Preview Support
+                allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif', 'image/bmp', 'image/x-icon'],
+                
+                // Maps Formats to Extensions
+                formatExtensions: {
+                    'JPEG': '.jpg', 'PNG': '.png', 'WEBP': '.webp',
+                    'BMP': '.bmp', 'TIFF': '.tiff', 'ICO': '.ico',
+                    'PPM': '.ppm', 'TGA': '.tga'
+                },
 
-        function setTheme(theme) {
-            if (theme === 'dark') {
-                document.documentElement.classList.add('dark');
-                logo.src = 'morpha_dark.svg';
-            } else {
-                document.documentElement.classList.remove('dark');
-                logo.src = 'morpha.svg';
+                initApp() {
+                    const refresh = () => this.$nextTick(() => lucide.createIcons());
+                    this.$watch('queue.length', refresh);
+                    this.$watch('results.length', refresh);
+                    window.addEventListener('paste', (e) => this.handlePaste(e));
+                    
+                    // Poll for Python Readiness
+                    const checkPython = setInterval(() => {
+                        if (window.pythonEngineReady) {
+                            this.pythonReady = true;
+                            clearInterval(checkPython);
+                        }
+                    }, 500);
+                    
+                    lucide.createIcons();
+                },
+
+                // --- Helpers ---
+                idGen() { return Math.random().toString(36).substr(2, 9); },
+                
+                formatBytes(bytes, decimals = 1) {
+                    if (!bytes) return '0 B';
+                    const k = 1024;
+                    const dm = decimals < 0 ? 0 : decimals;
+                    const sizes = ['B', 'KB', 'MB', 'GB'];
+                    const i = Math.floor(Math.log(bytes) / Math.log(k));
+                    return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
+                },
+
+                validateFile(file) {
+                    return file && this.allowedMimes.includes(file.type);
+                },
+
+                splitName(fullFilename) {
+                    const i = fullFilename.lastIndexOf('.');
+                    if (i === -1) return { base: fullFilename, ext: '' };
+                    return { base: fullFilename.substring(0, i), ext: fullFilename.substring(i) };
+                },
+
+                getUniqueNameParts(baseName, extension, list) {
+                    let newBase = baseName;
+                    let counter = 1;
+                    const fullExt = extension.startsWith('.') ? extension : '.' + extension;
+                    const isTaken = (name) => list.some(item => (item.baseName.toLowerCase() === name.toLowerCase()) && (item.ext.toLowerCase() === fullExt.toLowerCase()));
+                    while (isTaken(newBase)) { newBase = `${baseName} (${counter})`; counter++; }
+                    return newBase;
+                },
+
+                getUniqueInputName(baseName, extension, list) {
+                     let newBase = baseName;
+                     let counter = 1;
+                     const getFull = (b, e) => (b + e).toLowerCase();
+                     const target = (extension || '').toLowerCase();
+                     while (list.some(item => getFull(item.baseName, item.ext) === getFull(newBase, target))) { newBase = `${baseName} (${counter})`; counter++; }
+                     return newBase;
+                },
+
+                // --- Input Logic ---
+                addFileToQueue(file, source = 'file') {
+                    if (!this.validateFile(file)) {
+                        console.warn("Unsupported Input Format:", file.type);
+                        return;
+                    }
+                    
+                    const { base, ext } = this.splitName(file.name);
+                    const uniqueBase = this.getUniqueInputName(base, ext, this.queue);
+                    const id = this.idGen();
+                    const url = URL.createObjectURL(file);
+                    
+                    this.queue.push({
+                        id,
+                        baseName: uniqueBase, 
+                        ext: ext,             
+                        file: file,
+                        url,
+                        size: file.size,
+                        type: file.type,
+                        isProcessing: false,
+                        targetFormat: 'global',
+                    });
+                },
+
+                handleFiles(fileList, source = 'file') {
+                    Array.from(fileList).forEach(f => this.addFileToQueue(f, source));
+                    if(this.$refs.fileInput) this.$refs.fileInput.value = '';
+                    if(this.$refs.folderInput) this.$refs.folderInput.value = '';
+                },
+
+                async addUrl() {
+                    if (!this.urlInput) return;
+                    const u = this.urlInput;
+                    this.urlInput = 'Fetching...';
+                    const proxyUrl = 'https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(u);
+
+                    try {
+                        const res = await fetch(proxyUrl); 
+                        if (!res.ok) throw new Error('Network error');
+                        const blob = await res.blob();
+                        if (!this.validateFile(blob)) throw new Error(`Unsupported image type: ${blob.type}`);
+                        
+                        const name = new URL(u).pathname.split('/').pop() || 'remote-image.jpg';
+                        const file = new File([blob], name, { type: blob.type });
+                        this.addFileToQueue(file, 'url');
+                        this.urlInput = '';
+                    } catch (e) {
+                        alert(`Could not add image: ${e.message}`);
+                        this.urlInput = u;
+                    }
+                },
+
+                async pasteFromClipboard() {
+                    try {
+                        const items = await navigator.clipboard.read();
+                        let foundImage = false;
+                        for (const item of items) {
+                             const imageType = item.types.find(type => this.allowedMimes.includes(type));
+                             if (imageType) {
+                                 const blob = await item.getType(imageType);
+                                 const ext = '.' + (imageType.split('/')[1] || 'png');
+                                 const file = new File([blob], `clipboard_image${ext}`, { type: imageType });
+                                 this.addFileToQueue(file, 'clipboard');
+                                 foundImage = true;
+                             }
+                        }
+                        if (!foundImage) alert("No supported images found in clipboard.");
+                    } catch (err) {
+                        console.error(err);
+                        alert('Clipboard access denied. Try using Ctrl+V.');
+                    }
+                },
+
+                async handlePaste(e) {
+                    const items = (e.clipboardData || e.originalEvent.clipboardData).items;
+                    for (const item of items) {
+                        if (item.kind === 'file') {
+                            const blob = item.getAsFile();
+                            if (this.validateFile(blob)) {
+                                const ext = '.' + (blob.type.split('/')[1] || 'png');
+                                const file = new File([blob], `pasted_image${ext}`, { type: blob.type });
+                                this.addFileToQueue(file, 'clipboard');
+                            }
+                        }
+                    }
+                },
+
+                handleDrop(e) {
+                    this.isDragging = false;
+                    const items = e.dataTransfer.items;
+                    
+                    const traverse = async (entry) => {
+                        if (entry.isFile) {
+                            await new Promise(resolve => entry.file(f => {
+                                if (this.validateFile(f)) this.addFileToQueue(f, 'dragdrop');
+                                resolve();
+                            }));
+                        } else if (entry.isDirectory) {
+                            const reader = entry.createReader();
+                            const entries = await new Promise(resolve => reader.readEntries(resolve));
+                            for (const sub of entries) await traverse(sub);
+                        }
+                    };
+
+                    if (items && items[0] && items[0].webkitGetAsEntry) {
+                        for (const item of items) {
+                            const entry = item.webkitGetAsEntry();
+                            if (entry) traverse(entry);
+                        }
+                    } else {
+                        Array.from(e.dataTransfer.files).forEach(f => {
+                            if (this.validateFile(f)) this.addFileToQueue(f, 'dragdrop');
+                        });
+                    }
+                },
+
+                // --- Conversion Logic ---
+
+                async convertItem(item) {
+                    if (item.isProcessing) return;
+                    item.isProcessing = true;
+
+                    // Determine Target Format
+                    const targetFormat = item.targetFormat === 'global' ? this.globalFormat : item.targetFormat;
+                    
+                    // Standard formats that Canvas can handle efficiently
+                    const isStandardFormat = ['JPEG', 'PNG', 'WEBP'].includes(targetFormat);
+
+                    try {
+                        let blob = null;
+                        
+                        // 1. Fast Path: Browser Canvas
+                        if (isStandardFormat) {
+                            const img = new Image();
+                            img.crossOrigin = "anonymous"; 
+                            await new Promise((resolve, reject) => {
+                                img.onload = resolve;
+                                img.onerror = reject;
+                                img.src = item.url;
+                            });
+
+                            const canvas = document.createElement('canvas');
+                            canvas.width = img.width;
+                            canvas.height = img.height;
+                            const ctx = canvas.getContext('2d');
+
+                            if (targetFormat === 'JPEG') {
+                                ctx.fillStyle = '#ffffff';
+                                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                            }
+                            ctx.drawImage(img, 0, 0);
+                            
+                            // Canvas to Blob
+                            blob = await new Promise(resolve => canvas.toBlob(resolve, `image/${targetFormat.toLowerCase()}`, 0.92));
+                        
+                        // 2. Power Path: Python Pillow
+                        } else {
+                            if (!this.pythonReady) throw new Error("Python engine is loading. Please wait...");
+                            
+                            // Fetch bytes
+                            const response = await fetch(item.url);
+                            const buffer = await response.arrayBuffer();
+                            const uint8Array = new Uint8Array(buffer);
+                            
+                            // Execute Python Conversion
+                            const resultBytes = window.convertImagePy(uint8Array, targetFormat);
+                            
+                            if (resultBytes) {
+                                // Convert result back to Blob
+                                let mimeType = `image/${targetFormat.toLowerCase()}`;
+                                if (targetFormat === 'ICO') mimeType = 'image/x-icon';
+                                blob = new Blob([resultBytes], { type: mimeType });
+                            } else {
+                                throw new Error("Python conversion returned no data.");
+                            }
+                        }
+
+                        if (!blob) throw new Error("Conversion failed");
+
+                        const currentBaseName = item.baseName || 'untitled';
+                        const ext = this.formatExtensions[targetFormat] || '.bin';
+                        const finalBaseName = this.getUniqueNameParts(currentBaseName, ext, this.results);
+                        const resultUrl = URL.createObjectURL(blob);
+
+                        this.results.push({
+                            id: this.idGen(),
+                            sourceId: item.id,
+                            baseName: finalBaseName, 
+                            ext: ext,                
+                            blob: blob,
+                            url: resultUrl,
+                            format: targetFormat
+                        });
+
+                    } catch (error) {
+                        console.error("Conversion error:", error);
+                        alert(`Failed to convert ${item.baseName}: ${error.message}`);
+                    } finally {
+                        item.isProcessing = false;
+                    }
+                },
+
+                async convertAll() {
+                    for (const item of this.queue) {
+                        await this.convertItem(item);
+                    }
+                },
+
+                // --- UI Helpers ---
+                removeQueueItem(id) {
+                    const idx = this.queue.findIndex(i => i.id === id);
+                    if (idx > -1) { URL.revokeObjectURL(this.queue[idx].url); this.queue.splice(idx, 1); }
+                },
+                removeResult(id) {
+                    const idx = this.results.findIndex(i => i.id === id);
+                    if (idx > -1) { URL.revokeObjectURL(this.results[idx].url); this.results.splice(idx, 1); }
+                },
+                clearQueue() { this.queue.forEach(i => URL.revokeObjectURL(i.url)); this.queue = []; },
+                clearResults() { this.results.forEach(i => URL.revokeObjectURL(i.url)); this.results = []; },
+
+                downloadItem(item) {
+                    const a = document.createElement('a');
+                    a.href = item.url;
+                    a.download = item.baseName + item.ext;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                },
+
+                async downloadZip() {
+                    if (!this.results.length) return;
+                    const zip = new JSZip();
+                    this.results.forEach(f => zip.file(f.baseName + f.ext, f.blob));
+                    const content = await zip.generateAsync({ type: 'blob' });
+                    const url = URL.createObjectURL(content);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'images.zip';
+                    document.body.appendChild(a); a.click();
+                    setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
+                }
             }
         }
-
-        // Initialize theme based on localStorage or system preference
-        const currentTheme = localStorage.getItem('theme') || (prefersDarkScheme.matches ? 'dark' : 'light');
-        setTheme(currentTheme);
-        toggleCheckbox.checked = currentTheme === 'dark';
-
-        toggleCheckbox.addEventListener('change', () => {
-            if (toggleCheckbox.checked) {
-                setTheme('dark');
-                localStorage.setItem('theme', 'dark');
-            } else {
-                setTheme('light');
-                localStorage.setItem('theme', 'light');
-            }
-        });
     </script>
-
-    <!-- PyScript Code -->
-    <script type="py">
-import asyncio
-
-async def main():
-    import io
-    import zipfile
-    from js import document, Blob, URL, Uint8Array
-    import micropip
-    from pyodide.http import pyfetch
-    from pyodide.ffi import create_proxy
-
-    spinner = document.querySelector('.spinner-container')
-    await micropip.install("pillow")
-    from PIL import Image
-    spinner.classList.add('hidden')
-
-    thumbnail_list = document.getElementById("thumbnail-list")
-    converted_list = document.getElementById("converted-list")
-    items = []
-    converted_items = []
-
-    formats = ["JPEG", "PNG", "WEBP", "BMP", "TIFF", "ICO", "PPM", "TGA"]
-
-    def toggle_format_select(event=None):
-        apply_to_all = document.getElementById("apply-to-all-checkbox").checked
-        global_format_select = document.getElementById("format-select")
-        if apply_to_all:
-            global_format_select.disabled = False
-            global_format_select.style.opacity = "1"
-            global_format_select.style.cursor = "pointer"
-            for item in items:
-                if 'format_select' in item:
-                    item['format_select'].style.display = 'none'
-        else:
-            global_format_select.disabled = True
-            global_format_select.style.opacity = "0.5"
-            global_format_select.style.cursor = "not-allowed"
-            for item in items:
-                if 'format_select' in item:
-                    item['format_select'].style.display = 'block'
-
-    document.getElementById("apply-to-all-checkbox").addEventListener("change", create_proxy(toggle_format_select))
-    toggle_format_select()
-
-    def update_convert_button_visibility():
-        if len(items) >= 2:
-            document.getElementById("convert-button").classList.remove('hidden')
-            document.getElementById("remove-all-input-button").classList.remove('hidden')
-        else:
-            document.getElementById("convert-button").classList.add('hidden')
-            document.getElementById("remove-all-input-button").classList.add('hidden')
-
-    def update_download_button_visibility():
-        if len(converted_items) >= 2:
-            document.getElementById("download-all-button").classList.remove('hidden')
-            document.getElementById("remove-all-output-button").classList.remove('hidden')
-        else:
-            document.getElementById("download-all-button").classList.add('hidden')
-            document.getElementById("remove-all-output-button").classList.add('hidden')
-
-    async def add_file(event):
-        files = event.target.files
-        for i in range(files.length):
-            file = files.item(i)
-            blob_url = URL.createObjectURL(file)
-            item_data = {
-                "type": "file",
-                "data": file,
-                "src": blob_url,
-                "name": file.name,
-                "format": None
-            }
-            items.append(item_data)
-            display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
-        update_convert_button_visibility()
-        toggle_format_select()
-
-    async def add_directory(event):
-        files = event.target.files
-        for i in range(files.length):
-            file = files.item(i)
-            if file.type.startswith("image/"):
-                blob_url = URL.createObjectURL(file)
-                item_data = {
-                    "type": "file",
-                    "data": file,
-                    "src": blob_url,
-                    "name": file.name,
-                    "format": None
-                }
-                items.append(item_data)
-                display_thumbnail(blob_url, file.name, thumbnail_list, item_data)
-        update_convert_button_visibility()
-        toggle_format_select()
-
-    async def add_url(event):
-        url_input = document.getElementById("input-url")
-        url = url_input.value.strip()
-        if url:
-            try:
-                response = await pyfetch(url)
-                byte_data = await response.bytes()
-                item_name = url.split("/")[-1] or "image"
-                if not any(c in item_name for c in ('?', '#')):
-                    item_name = item_name.split('?')[0].split('#')[0]
-                item_data = {
-                    "type": "url",
-                    "data": byte_data,
-                    "src": url,
-                    "name": item_name,
-                    "format": None
-                }
-                items.append(item_data)
-                display_thumbnail(url, item_data["name"], thumbnail_list, item_data)
-                url_input.value = ""
-                update_convert_button_visibility()
-                toggle_format_select()
-            except Exception as e:
-                pass
-
-    def display_thumbnail(src, name, container, item_data, is_converted=False):
-        thumbnail_item = document.createElement("div")
-        thumbnail_item.className = "flex items-center gap-2 mb-2"
-
-        remove_btn = document.createElement("button")
-        remove_btn.innerHTML = "&#10005;"
-        remove_btn.className = "text-red-500 hover:text-red-700 text-xl focus:outline-none"
-        remove_btn.onclick = create_proxy(lambda e: remove_image(item_data, container, thumbnail_item))
-        
-        img = document.createElement("img")
-        img.src = src
-        img.alt = name
-        img.className = "w-12 h-12 object-cover rounded border"
-
-        if is_converted:
-            if '.' in name:
-                basename, extension = name.rsplit('.', 1)
-                extension = '.' + extension
-            else:
-                basename = name
-                extension = ''
-
-            base_download_name = f"{basename}{extension}"
-            unique_download_name = generate_unique_name(base_download_name)
-
-            name_input = document.createElement("input")
-            name_input.type = "text"
-            name_input.value = basename
-            name_input.className = "flex-1 px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-            item_data['basename'] = basename
-
-            extension_span = document.createElement("span")
-            extension_span.textContent = extension
-            extension_span.className = "extension-span text-gray-500 ml-2"
-
-            name_container = document.createElement("div")
-            name_container.className = "flex items-center flex-1"
-            name_container.appendChild(name_input)
-            name_container.appendChild(extension_span)
-
-            save_link = document.createElement("a")
-            save_link.href = src
-            save_link.download = unique_download_name
-            save_link.innerHTML = '<img src="download.svg" alt="Download" class="w-5 h-5">';
-            save_link.className = "text-green-500 hover:text-green-700 text-xl ml-2";
-            item_data['save_link'] = save_link;
-
-            thumbnail_item.appendChild(remove_btn);
-            thumbnail_item.appendChild(img);
-            thumbnail_item.appendChild(name_container);
-            thumbnail_item.appendChild(save_link);
-            container.appendChild(thumbnail_item);
-            converted_items.append(item_data);
-
-            def update_name(event):
-                new_basename = name_input.value.strip()
-                if not new_basename:
-                    new_basename = "untitled"
-                    name_input.value = new_basename
-                item_data['basename'] = new_basename
-                new_download_name = f"{new_basename}{extension}"
-                unique_new_download_name = generate_unique_name(new_download_name)
-                save_link.download = unique_new_download_name
-                item_data['name'] = unique_new_download_name
-
-            name_input.addEventListener("change", create_proxy(update_name))
-            name_input.addEventListener("blur", create_proxy(update_name))
-            name_input.addEventListener("keyup", create_proxy(lambda e: e.key == 'Enter' and update_name(e)))
-        else:
-            text = document.createElement("span")
-            text.textContent = name
-            text.className = "flex-1 truncate"
-
-            format_select = document.createElement("select")
-            format_select.className = "px-4 py-2 border rounded dark:bg-gray-700 dark:border-gray-600"
-            for fmt in formats:
-                option = document.createElement("option")
-                option.value = fmt
-                option.textContent = fmt
-                format_select.appendChild(option)
-            format_select.value = document.getElementById("format-select").value
-            item_data['format_select'] = format_select
-
-            apply_to_all = document.getElementById("apply-to-all-checkbox").checked
-            if apply_to_all:
-                format_select.style.display = "none"
-            else:
-                format_select.style.display = "block"
-
-            convert_btn = document.createElement("button")
-            convert_btn.innerHTML = '<img src="convert.svg" alt="Convert" class="w-5 h-5"> Convert'
-            convert_btn.className = "bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded transition cursor-pointer text-center font-bold text-base individual-convert-button"
-            convert_btn.onclick = create_proxy(lambda e, item_data=item_data: handle_convert_click(e, item_data))
-
-            thumbnail_item.appendChild(remove_btn)
-            thumbnail_item.appendChild(img)
-            thumbnail_item.appendChild(text)
-            thumbnail_item.appendChild(format_select)
-            thumbnail_item.appendChild(convert_btn)
-            container.appendChild(thumbnail_item)
-
-    def remove_image(item_data, container, thumbnail_item):
-        if container.id == "thumbnail-list":
-            if item_data in items:
-                items.remove(item_data)
-            container.removeChild(thumbnail_item)
-            update_convert_button_visibility()
-            toggle_format_select()
-        elif container.id == "converted-list":
-            if item_data in converted_items:
-                converted_items.remove(item_data)
-            container.removeChild(thumbnail_item)
-            update_download_button_visibility()
-
-    def generate_unique_name(base_name):
-        if '.' in base_name:
-            name, ext = base_name.rsplit('.', 1)
-            ext = '.' + ext
-        else:
-            name = base_name
-            ext = ''
-
-        existing_names = [item['name'] for item in converted_items]
-        if base_name not in existing_names:
-            return base_name
-
-        i = 1
-        while True:
-            new_name = f"{name}({i}){ext}"
-            if new_name not in existing_names:
-                return new_name
-            i += 1
-
-    async def convert_images(event):
-        if len(items) < 2:
-            return
-
-        apply_to_all = document.getElementById("apply-to-all-checkbox").checked
-        global_format = document.getElementById("format-select").value
-        spinner = document.querySelector('.spinner-container')
-        spinner.classList.remove('hidden')
-
-        for item in list(items):
-            if item["type"] == "file":
-                array_buffer = await item["data"].arrayBuffer()
-                byte_data = bytes(array_buffer.to_py())
-            else:
-                byte_data = item["data"]
-
-            img = Image.open(io.BytesIO(byte_data))
-            if img.mode == "P":
-                img = img.convert("RGBA")
-
-            output_io = io.BytesIO()
-            if apply_to_all:
-                selected_format = global_format
-            else:
-                selected_format = item['format_select'].value
-
-            if selected_format == "JPEG":
-                img = img.convert("RGB")
-            img.save(output_io, format=selected_format)
-            output_io.seek(0)
-
-            original_name = item["name"].rsplit(".", 1)[0]
-            extension = f".{selected_format.lower()}"
-            base_download_name = f"{original_name}{extension}"
-            unique_download_name = generate_unique_name(base_download_name)
-
-            converted_blob = Blob.new([Uint8Array.from_(output_io.read())], {"type": f"image/{selected_format.lower()}"})
-            blob_url = URL.createObjectURL(converted_blob)
-            converted_item_data = {"name": unique_download_name, "data": output_io.getvalue()}
-            display_thumbnail(blob_url, unique_download_name, converted_list, converted_item_data, is_converted=True)
-
-        spinner.classList.add('hidden')
-        update_download_button_visibility()
-
-    def handle_convert_click(event, item_data):
-        asyncio.ensure_future(convert_single_image(item_data))
-
-    async def convert_single_image(item_data):
-        if item_data in converted_items:
-            return
-
-        if item_data["type"] == "file":
-            array_buffer = await item_data["data"].arrayBuffer()
-            byte_data = bytes(array_buffer.to_py())
-        else:
-            byte_data = item_data["data"]
-
-        img = Image.open(io.BytesIO(byte_data))
-        if img.mode == "P":
-            img = img.convert("RGBA")
-
-        output_io = io.BytesIO()
-        apply_to_all = document.getElementById("apply-to-all-checkbox").checked
-        if apply_to_all:
-            selected_format = document.getElementById("format-select").value
-        else:
-            selected_format = item_data['format_select'].value
-
-        if selected_format == "JPEG":
-            img = img.convert("RGB")
-        img.save(output_io, format=selected_format)
-        output_io.seek(0)
-
-        original_name = item_data["name"].rsplit(".", 1)[0]
-        extension = f".{selected_format.lower()}"
-        base_download_name = f"{original_name}{extension}"
-        unique_download_name = generate_unique_name(base_download_name)
-
-        converted_blob = Blob.new([Uint8Array.from_(output_io.read())], {"type": f"image/{selected_format.lower()}"})
-        blob_url = URL.createObjectURL(converted_blob)
-        converted_item_data = {"name": unique_download_name, "data": output_io.getvalue()}
-        display_thumbnail(blob_url, unique_download_name, converted_list, converted_item_data, is_converted=True)
-        update_download_button_visibility()
-
-    def download_all(event):
-        if len(converted_items) < 2:
-            return
-
-        zip_io = io.BytesIO()
-        with zipfile.ZipFile(zip_io, mode="w", compression=zipfile.ZIP_DEFLATED) as zip_file:
-            zip_filename_counts = {}
-            for item in converted_items:
-                base_name = item.get('name', 'untitled')
-                if '.' in base_name:
-                    name, ext = base_name.rsplit('.', 1)
-                    ext = '.' + ext
-                else:
-                    name = base_name
-                    ext = ''
-
-                count = zip_filename_counts.get(base_name, 0)
-                if count > 0:
-                    new_name = f"{name}({count}){ext}"
-                else:
-                    new_name = base_name
-                zip_filename_counts[base_name] = count + 1
-
-                zip_file.writestr(new_name, item['data'])
-        zip_blob = Blob.new([Uint8Array.from_(zip_io.getvalue())], {"type": "application/zip"})
-        zip_url = URL.createObjectURL(zip_blob)
-        download_link = document.createElement("a")
-        download_link.href = zip_url
-        download_link.download = "converted_images.zip"
-        download_link.click()
-
-    def remove_all_inputs(event):
-        items.clear()
-        thumbnail_list.innerHTML = ""
-        update_convert_button_visibility()
-        toggle_format_select()
-
-    def remove_all_outputs(event):
-        converted_items.clear()
-        converted_list.innerHTML = ""
-        update_download_button_visibility()
-
-    document.getElementById("input-file").addEventListener("change", create_proxy(add_file))
-    document.getElementById("directory-file").addEventListener("change", create_proxy(add_directory))
-    document.getElementById("add-url-button").addEventListener("click", create_proxy(add_url))
-    document.getElementById("convert-button").addEventListener("click", create_proxy(convert_images))
-    document.getElementById("download-all-button").addEventListener("click", create_proxy(download_all))
-    document.getElementById("remove-all-input-button").addEventListener("click", create_proxy(remove_all_inputs))
-    document.getElementById("remove-all-output-button").addEventListener("click", create_proxy(remove_all_outputs))
-
-    async def input_url_keydown(event):
-        if event.key == 'Enter':
-            await add_url(event)
-
-    document.getElementById("input-url").addEventListener("keydown", create_proxy(input_url_keydown))
-
-    update_convert_button_visibility()
-    update_download_button_visibility()
-
-asyncio.ensure_future(main());
-
-    </script>
+    
+    <script data-goatcounter="https://reffler.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
